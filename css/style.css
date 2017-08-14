@@ -1,0 +1,195 @@
+/*
+EVENTMAN (EVN)
+-COPYRIGHT NOTICE-
+Eventman Copyright (c) 2017 Sean Kee - All Rights Reserved.
+
+Unauthorized copying or reproduction of this file is strictly prohibited.
+
+Visit https://mrskee.github.io/ for more information.
+Sean Kee <skee66499@gmail.com>
+*/
+
+@import url('https://fonts.googleapis.com/css?family=Poppins:300,400,500,600');
+html {
+    height: vh;
+    min-height: 900px;
+}
+
+body {
+    background-color: #f0f0f0;
+}
+
+nav {
+    background-color: #292929;
+}
+
+.nav-wrapper {
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+.nav-content {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.tabs-center {
+    margin: 0 auto;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex
+}
+
+.tabs-center .tab {
+    -webkit-box-flex: 1;
+    -webkit-flex-grow: 1;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+}
+
+#header-logo {
+    height: 3rem;
+    color: #fff;
+    display: inline-block;
+    padding: 0;
+    float: left !important;
+    margin-top: .75rem;
+    margin-right: 4rem;
+}
+
+.brand-logo {
+    /*font-family: 'Poppins', sans-serif;*/
+}
+
+.nav-dropdown-btn {
+    border-radius: 0 0 10px 10px;
+}
+
+.uppercase {
+    text-transform: uppercase !important;
+}
+
+.uppdercase li a {
+    text-transform: uppercase !important;
+}
+
+.uppdercase li {
+    text-transform: uppercase !important;
+}
+
+.uppdercase a {
+    text-transform: uppercase !important;
+}
+
+#content {
+    margin-top: 5rem;
+}
+
+.top-space {
+    margin-top: 3rem;
+}
+
+#registrants-list-card {
+    overflow: auto;
+}
+
+#registrants-table {
+    width: 100%;
+    position: relative;
+    border-collapse: collapse;
+}
+
+#registrants-table td {
+    border-collapse: collapse;
+    max-width: 200px;
+    overflow: auto;
+}
+
+#loading-bar-wrapper {
+    padding: 3rem;
+    position: relative;
+}
+
+#loading-bar {
+    top: 30vh;
+}
+
+#nav-dropdown {
+    border-radius: 0px 0px 10px 10px;
+}
+
+.dropdown-content li>a,
+.dropdown-content li>span {
+    color: #292929;
+}
+
+#schools-table td {
+    border-collapse: collapse;
+    max-width: 150px;
+    overflow: auto;
+}
+
+#statistics .row {
+    margin-top: 20px;
+}
+
+@media only screen and (min-width: 992px) {
+    .status-column {
+        width: 150px !important;
+        min-width: 150px;
+        max-width: 150px;
+    }
+}
+
+.checked-in {
+    background-color: #d8d8d8;
+    color: white;
+    font-size: 100%;
+    padding: 0 1.25rem;
+}
+
+.check-in {
+    background-color: #1eea00;
+    color: white;
+    font-size: 100%;
+    padding: 0 1.75rem;
+}
+
+.more-btn {
+    padding: 0 0.5rem;
+}
+
+@media only screen and (min-width: 992px) {
+    #check-out-warning-modal {
+        width: 30%;
+    }
+}
+
+@media only screen and (max-width: 992px) {
+    #check-out-warning-modal {
+        width: 50%;
+    }
+}
+
+.modal .modal-footer {
+    padding: 4px 20px;
+}
+
+#check-out-warning-modal-check-out {
+    color: white;
+    background-color: #f35c5c
+}
+
+.anti-card {
+    color: #aeaeae;
+}
+
+.row-no-margin {
+    margin: 0 !important;
+}
+
+.toast-fix {
+    position: relative;
+    top: 20px !important;
+}
