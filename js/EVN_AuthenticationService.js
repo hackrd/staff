@@ -142,8 +142,7 @@ function UserUpdatePassword(pError) {
 
 // Redirect upon success
 function IsSuccess() {
-    const LoginForm = $('#LoginForm');
-    LoginForm.submit();
+    window.location = "registrants.html";
 }
 
 function IsFailure() {
