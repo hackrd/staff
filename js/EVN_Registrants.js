@@ -71,6 +71,7 @@ EVN_Registrants.prototype.ClearRegistrantHistory = function (pID) {
 }
 
 EVN_Registrants.prototype.CheckIn = function (pID) {
+    var EVN = this;
     var ID = pID;
     var Timestamp = new Date();
     Timestamp = Timestamp.toString();
@@ -81,7 +82,7 @@ EVN_Registrants.prototype.CheckIn = function (pID) {
     firebase.database().ref().child('APPDATA').child('Registrants').child(pID).once('value').then(function (snap) {
         if (typeof snap.val().Log != 'undefined') {
             OldLog = snap.val().Log;
-            Update = OldLog + " CHECKIN@ " + Timestamp;
+        Update = OldLog + " CHECKIN@ " + Timestamp + "#" + EVN.mUser.mUsername;
         }
         else {
             Update = "CHECKIN@" + Timestamp;
@@ -103,8 +104,8 @@ EVN_Registrants.prototype.CheckIn = function (pID) {
 EVN_Registrants.prototype.CheckOut = function (pID) {
     var EVN = this;
     if (EVN.mStatus[pID].Status != false) {
-        $("#check-out-warning-modal-check-out").unbind("click");
-        $("#check-out-warning-modal-check-out").one("click", function () {
+        $("#check-out-warning-modal-confirm").unbind("click");
+        $("#check-out-warning-modal-confirm").one("click", function () {
             var ID = pID;
             var Timestamp = new Date();
             Timestamp = Timestamp.toString();
@@ -115,7 +116,7 @@ EVN_Registrants.prototype.CheckOut = function (pID) {
             firebase.database().ref().child('APPDATA').child('Registrants').child(ID).once('value').then(function (snap) {
                 if (typeof snap.val().Log != 'undefined') {
                     OldLog = snap.val().Log;
-                    Update = OldLog + " CHECKOUT@" + Timestamp;
+                    Update = OldLog + " CHECKOUT@" + Timestamp + "#" + EVN.mUser.mUsername;
                 }
                 else {
                     Update = "CHECKOUT@" + Timestamp;

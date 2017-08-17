@@ -13,6 +13,7 @@ Sean Kee <skee66499@gmail.com>
 var EVN_User = function () {
     this.mData = {};
     this.mUid = "";
+    this.mUsername = "";
     this.mType = "";
     this.mPermissions = {};
 }
@@ -50,6 +51,7 @@ EVN_User.prototype.CreateFirebaseEntry = function (pUid, pType, pCallback) {
     });
     
     USER.mUid = pUid;
+    USER.mUsername = Username;
     USER.mType = pType;
 
     firebase.database().ref().child('Permissions').once('value').then(function (snap) {
@@ -66,6 +68,7 @@ EVN_User.prototype.Load = function (pUid, pCallback) {
         if (typeof snap.val()[pUid] != 'undefined') {
             var UserData = snap.val()[pUid];
             USER.mUid = UserData.Uid;
+            USER.mUsername = UserData.Username;
             USER.mType = UserData.Type;
             // Load permissions
             firebase.database().ref().child('Permissions').once('value').then(function (snap) {

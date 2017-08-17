@@ -95,7 +95,7 @@ Sean Kee <skee66499@gmail.com>
                                     autofocus="" />
                                 <input id="ConfirmNewPasswordField" type="password" class="form-control" name="password" placeholder="Confirm Password" required=""
                                 />
-                                <button id="ButtonUpdatePassword" class="waves-effect waves-light btn right" type="button">CHANGE PASSWORD</a>
+                                <button id="ButtonUpdatePassword" class="waves-effect waves-light btn right" type="button">CHANGE PASSWORD</button>
                             </form>
                         </div>
                     </div>
@@ -106,7 +106,44 @@ Sean Kee <skee66499@gmail.com>
         <!-- Manage Tab -->
         <div id="manage" class="container" style="display: none;">
             <div id="manage-wrapper" class="">
+                <div class="row">
+                    <div class="col s3"></div>
+                    <div id="clear-registrants-log-history" class="card col s6">
+                        <div id="clear-registrants-log-history-card" class="card-content">
+                            <h5>Clear check in/out history</h5>
+                            <p>This will clear all check in/out history</p>
+                            <br />
+                            <button id="ButtonClearAllRegistrantsHistory" class="waves-effect waves-light btn modal-trigger" type="button" href="#clear-registrants-warning-modal">CLEAR REGISTRANTS</button>
+                            <button id="ButtonClearAllStaffHistory" class="waves-effect waves-light btn modal-trigger" type="button" href="#clear-staff-warning-modal">CLEAR STAFF</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
+            <!-- Clear Warning Modals -->
+            <div id="clear-registrants-warning-modal" class="modal">
+                <div class="modal-content">
+                    <h4>Warning</h4>
+                    <p>Your are about to clear the check in/out history for all the <strong>registrants</strong>.
+                        Continue?
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <a href="#!" class="modal-action modal-close waves-effect waves-grey btn-flat ">Cancel</a>
+                    <a id="clear-registrants-warning-modal-confirm" href="#!" class="warning-modal-confirm modal-action modal-close waves-effect waves-green btn-flat">CLEAR</a>
+                </div>
+            </div>
+            <div id="clear-staff-warning-modal" class="modal">
+                <div class="modal-content">
+                    <h4>Warning</h4>
+                    <p>Your are about to clear the check in/out history for all the <strong>staff</strong>.
+                        Continue?
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <a href="#!" class="modal-action modal-close waves-effect waves-grey btn-flat ">Cancel</a>
+                    <a id="clear-staff-modal-confirm" href="#!" class="warning-modal-confirm modal-action modal-close waves-effect waves-green btn-flat" onclick="Materialize.toast('Sorry, this feature is not available yet', 4000, 'toast-fix')">CLEAR</a>
+                </div>
             </div>
         </div>
 
@@ -129,6 +166,12 @@ Sean Kee <skee66499@gmail.com>
                             <h5>Copyrights</h5>
                             <p>Hack River Dell © 2017 Hack River Dell</p>
                         </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s4"></div>
+                    <div class="anti-card col s4">
+                        <p>Please report any issues <a href="https://github.com/hackrd/staff/issues" target="_blank">here</a>.</p>
                     </div>
                 </div>
             </div>

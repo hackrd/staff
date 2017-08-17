@@ -2,6 +2,16 @@
 Hack River Dell Staff Access Panel
 
 Versions will be published under two names: Prototype and Release. Only published versions will be noted on this document.
+## PROTOTYPE v0.16.0
+### New Features
+##### Settings Page
+- Reset a registrant history
+- Added issue report link
+### Bug Fixes
+- Git POST error 405 fixed
+### Changelog
+- Renamed modal confirmation buttons
+
 ## PROTOTYPE v0.15.4
 ### New Features
 ##### Systems
@@ -13,6 +23,8 @@ Versions will be published under two names: Prototype and Release. Only publishe
 ##### Settings Page
 - Update user password
 - About Page
+### Bug Fixes
+N/A
 ### Changelog
 None! First live Prototype version!
 

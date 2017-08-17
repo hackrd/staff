@@ -176,7 +176,7 @@ nav {
     padding: 4px 20px;
 }
 
-#check-out-warning-modal-check-out {
+.warning-modal-confirm {
     color: white;
     background-color: #f35c5c
 }

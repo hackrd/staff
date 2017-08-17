@@ -54,19 +54,19 @@ EVN_Settings.prototype.ClearAllRegistrantsHistory = function () {
     var EVN = this;
 
     if (EVN.mUser.HasPermission('ManageRegistrants') || EVN.mUser.HasPermission('All')) {
-        var ID = "";
-        var IDs = Object.keys(EVN.mStatus);
-        var ButtonID = $("#status-" + ID);
+        firebase.database().ref().child('APPDATA').child('Registrants').once('value').then(function (snap) {
+            var ID = "";
+            var IDs = Object.keys(snap.val());
 
-        for (var i = 0; i < IDs.length; i++) {
-            ID = IDs[i];
-            firebase.database().ref().child('APPDATA').child('Registrants').child(ID).set({
-                Status: false,
-            });
-        }
-        EVN.mTotalAttended = 0;
-        $("#totals-checked-in").html("Checked In: " + EVN.mTotalAttended);
-        console.log("Successfully Reset All Users");
+            for (var i = 0; i < IDs.length; i++) {
+                ID = IDs[i];
+                firebase.database().ref().child('APPDATA').child('Registrants').child(ID).set({
+                    Status: false,
+                });
+            }
+            //console.log("Successfully Reset All Users");
+            Materialize.toast("Successfully cleared all registrant history", 4000, "toast-fix");
+        });
     }
 }
 
@@ -83,7 +83,7 @@ EVN_Settings.prototype.LoadContent = function () {
         // View Staff panel
     }
     else {
-        $(".nav-dropdown-staff").remove();
+        $('.nav-dropdown-staff').remove();
     }
 
     $('#UpdatePasswordForm').keypress(function (e) {
@@ -93,11 +93,31 @@ EVN_Settings.prototype.LoadContent = function () {
         }
     });
 
+    if (EVN.mUser.HasPermission('ManageRegistrants') || EVN.mUser.HasPermission('All')) {
+        $('.manage-tab').removeClass('disabled');
+        $('#clear-registrants-warning-modal-confirm').click(function () {
+            EVN.ClearAllRegistrantsHistory();
+        });
+    }
+    else {
+        $('#manage').remove();
+    }
+
     $("#eventman-version").html(EVN_Version);
 
-    $("#loading-bar-wrapper").hide();
-    $("#account").show();
     $(".about-tab").removeClass('disabled');
+    $("#loading-bar-wrapper").hide();
+    if (Hash == '#about') {
+        $('#about').show();
+    }
+    else {
+        if (Hash == '#manage') {
+            $('#manage').show();
+        }
+        else {
+            $('#account').show();
+        }
+    }
 }
 
 EVN_Settings.prototype.Load = function () {
