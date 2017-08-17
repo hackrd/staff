@@ -85,7 +85,7 @@ EVN_Registrants.prototype.CheckIn = function (pID) {
         Update = OldLog + " CHECKIN@ " + Timestamp + "#" + EVN.mUser.mUsername;
         }
         else {
-            Update = "CHECKIN@" + Timestamp;
+            Update = "CHECKIN@" + Timestamp + "#" + EVN.mUser.mUsername;
         }
 
         //formatDate(Timestamp);
@@ -119,7 +119,7 @@ EVN_Registrants.prototype.CheckOut = function (pID) {
                     Update = OldLog + " CHECKOUT@" + Timestamp + "#" + EVN.mUser.mUsername;
                 }
                 else {
-                    Update = "CHECKOUT@" + Timestamp;
+                    Update = "CHECKOUT@" + Timestamp + "#" + EVN.mUser.mUsername;
                 }
         
                 //formatDate(Timestamp);

@@ -2,6 +2,10 @@
 Hack River Dell Staff Access Panel
 
 Versions will be published under two names: Prototype and Release. Only published versions will be noted on this document.
+## PROTOTYPE v0.16.2
+### Changelog
+- Check In/Out now logs the username of the account who performed the action
+- Changed the login page description to 'Staff Login'
 ## PROTOTYPE v0.16.0
 ### New Features
 ##### Settings Page
