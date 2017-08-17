@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /index.html
+Disallow: /registrants.html
+Disallow: /settings.html
