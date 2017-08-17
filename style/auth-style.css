@@ -1,0 +1,84 @@
+#main-wrapper {
+  height: 100vh;
+}
+
+#left-column {
+  background-color: #E0B90C;
+  width: 61.8%;
+}
+
+#right-column {
+  width: 38.2%;
+}
+
+#biginfo-container {
+  width: 75%;
+  margin: 0 auto;
+  margin-top: 30vh;
+}
+
+#biginfo {
+  border-style: solid;
+  border-color: white;
+  border-width: 5px;
+  width: 100%;
+  height: 100%;
+  padding: 2vh;
+}
+
+.bigtext {
+  font-size: 2.5em;
+}
+
+.boldtext {
+  font-weight: 700;
+}
+
+#auth-container {
+  width: 20em;
+  margin: 0 auto;
+  margin-top: 20vh;
+}
+
+#auth-app {
+  height: 25em;
+}
+
+.auth-app-tab {
+  float: left;
+  width: 50%;
+  height: 10%;
+  background-color: #DDDDDD;
+  border-style: solid;
+  border-color: #CCCCCC;
+  border-top-left-radius: 1em;
+  border-top-right-radius: 1em;
+}
+
+#auth-app-tab-login {
+  border-right: none;
+  border-top-right-radius: 0;
+}
+
+#auth-app-tab-register {
+  border-left: none;
+  border-top-left-radius: 0;
+}
+
+.auth-app-main {
+  float: left;
+  width: 100%;
+  height: 90%;
+  background-color: #FFFFFF;
+  border-style: solid;
+  border-top-style: none;
+  border-color: #CCCCCC;
+  border-bottom-left-radius: 1em;
+  border-bottom-right-radius: 1em;
+}
+
+.auth-app-main-hidden {
+  display: none;
+  position: fixed;
+  top: -100vh;
+}

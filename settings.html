@@ -1,0 +1,165 @@
+<!--
+EVENTMAN (EVN)
+-COPYRIGHT NOTICE-
+Eventman Copyright (c) 2017 Sean Kee - All Rights Reserved.
+
+Unauthorized copying or reproduction of this file is strictly prohibited.
+
+Visit https://mrskee.github.io/ for more information.
+Sean Kee <skee66499@gmail.com>
+-->
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Scripts -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
+    <link rel="manifest" href="favicons/manifest.json">
+    <link rel="mask-icon" href="favicons/safari-pinned-tab.svg" color="#057aff">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- Page Data -->
+    <title>Settings - Hack River Dell Access EVN</title>
+</head>
+
+<body>
+    <ul id="nav-dropdown" class="uppercase dropdown-content">
+        <li class="nav-dropdown-registrants"><a href="registrants.html">Registrants</a></li>
+        <li class="nav-dropdown-staff"><a href="#!" onclick="Materialize.toast('Sorry, this feature is not available yet', 4000, 'toast-fix')">Staff</a></li>
+        <li class="nav-dropdown-settings"><a href="#!">Settings</a></li>
+        <li class="divider"></li>
+        <li><a id="ButtonLogOut" href="index.html">Logout</a></li>
+    </ul>
+    <div class="navbar-fixed">
+        <nav class="nav-extended">
+            <div class="container">
+                <div class="nav-wrapper">
+                    <a href="#" class="brand-logo center">Hack River Dell Access</a>
+                    <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+                    <ul id="nav-mobile" class="right hide-on-med-and-down">
+                        <li class="nav-dropdown-btn"><a class="uppercase dropdown-button waves-effect nav-dropdown-btn" href="#!" data-activates="nav-dropdown">Settings<i class="material-icons right">arrow_drop_down</i></a></li>
+                    </ul>
+                    <ul id="mobile-demo" class="uppecase side-nav">
+                        <li class="nav-dropdown-registrants"><a href="registrants.html">Registrants</a></li>
+                        <li class="nav-dropdown-staff"><a href="#!" onclick="Materialize.toast('Sorry, this feature is not available yet', 4000, 'toast-fix')">Staff</a></li>
+                        <li class="nav-dropdown-settings"><a href="#1">Settings</a></li>
+                        <li class="divider"></li>
+                        <li><a id="ButtonLogOut" href="#!">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="nav-content">
+                <ul class="tabs tabs-transparent">
+                    <div class="tabs-center">
+                        <li class="tab"><a href="#account">Account</a></li>
+                        <li class="tab manage-tab disabled"><a href="#manage">Manage</a></li>
+                        <li class="tab about-tab disabled"><a href="#about">About</a></li>
+                    </div>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    <div id="content">
+        <div class="container">
+            <div id="loading-bar-wrapper">
+                <div id="loading-bar" class="progress">
+                    <div class="indeterminate"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Tab -->
+        <div id="account" class="container" style="display: none;">
+            <div id="account-wrapper" class="top-space">
+                <div class="row">
+                    <div class="col s2"></div>
+                    <div id="update-password" class="card col s8">
+                        <div id="update-password-card" class="card-content">
+                            <h5>Update Password</h5>
+                            <form id="UpdatePasswordForm" class="form-signin" method="post">
+                                <input id="NewPasswordField" type="password" class="form-control" name="password" placeholder="New Password" required=""
+                                    autofocus="" />
+                                <input id="ConfirmNewPasswordField" type="password" class="form-control" name="password" placeholder="Confirm Password" required=""
+                                />
+                                <button id="ButtonUpdatePassword" class="waves-effect waves-light btn right" type="button">CHANGE PASSWORD</a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manage Tab -->
+        <div id="manage" class="container" style="display: none;">
+            <div id="manage-wrapper" class="">
+
+            </div>
+        </div>
+
+        <!-- About Tab -->
+        <div id="about" class="container tools-tab" style="display: none;">
+            <div id="about-wrapper" class="">
+                <div class="row">
+                    <div class="col s4"></div>
+                    <div id="about-evn" class="card col s4">
+                        <div id="about-evn-card" class="card-content">
+                            <h5>Eventman Version</h5>
+                            <p id="eventman-version"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s4"></div>
+                    <div id="copyright" class="card col s4">
+                        <div id="copyright-card" class="card-content">
+                            <h5>Copyrights</h5>
+                            <p>Hack River Dell © 2017 Hack River Dell</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/4.2.0/firebase.js"></script>
+    <script src="js/EVN_AuthenticationService.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/js/materialize.min.js"></script>
+    <script src="js/EVN_User.js"></script>
+    <script src="js/EVN_Settings.js"></script>
+    <!--<script src="js/EVN_Load.js"></script>-->
+    <script>
+        $(document).ready(function () {
+            // the "href" attribute of the modal trigger must specify the modal ID that wants to be triggered
+            $('.modal').modal();
+        });
+        var APP_ID = "";
+        var SECRET = "";
+        var EVN_Dash = new EVN_Settings();
+        AUTH.onAuthStateChanged(firebaseUser => {
+            if (firebaseUser) {
+                firebase.database().ref().child('Keys').once('value').then(function (snap) {
+                    EVN_Dash.Load();
+                });
+            } else {
+                IsFailure();
+            }
+        })
+    </script>
+</body>
+
+</html>

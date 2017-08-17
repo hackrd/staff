@@ -1,0 +1,301 @@
+<!--
+EVENTMAN (EVN)
+-COPYRIGHT NOTICE-
+Eventman Copyright (c) 2017 Sean Kee - All Rights Reserved.
+
+Unauthorized copying or reproduction of this file is strictly prohibited.
+
+Visit https://mrskee.github.io/ for more information.
+Sean Kee <skee66499@gmail.com>
+-->
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/css/materialize.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Scripts -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>
+
+  <!-- Favicon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
+  <link rel="manifest" href="favicons/manifest.json">
+  <link rel="mask-icon" href="favicons/safari-pinned-tab.svg" color="#057aff">
+  <meta name="theme-color" content="#ffffff">
+
+  <!-- Page Data -->
+  <title>Registrants - Hack River Dell Access EVN</title>
+</head>
+
+<body>
+  <ul id="nav-dropdown" class="uppercase dropdown-content">
+    <li class="nav-dropdown-registrants"><a href="#!">Registrants</a></li>
+    <li class="nav-dropdown-staff"><a href="#!" onclick="Materialize.toast('Sorry, this feature is not available yet', 4000, 'toast-fix')">Staff</a></li>
+    <li class="nav-dropdown-settings"><a href="settings.html">Settings</a></li>
+    <li class="divider"></li>
+    <li><a id="ButtonLogOut" href="index.html">Logout</a></li>
+  </ul>
+  <div class="navbar-fixed">
+    <nav class="nav-extended">
+      <div class="container">
+        <div class="nav-wrapper">
+          <a href="#" class="brand-logo center">Hack River Dell Access</a>
+          <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+          <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li class="nav-dropdown-btn"><a class="uppercase dropdown-button waves-effect nav-dropdown-btn" href="#!" data-activates="nav-dropdown">Registrants<i class="material-icons right">arrow_drop_down</i></a></li>
+          </ul>
+          <ul id="mobile-demo" class="uppecase side-nav">
+            <li class="nav-dropdown-registrants"><a href="#!">Registrants</a></li>
+            <li class="nav-dropdown-staff"><a href="staff.html" onclick="Materialize.toast('Sorry, this feature is not available yet', 4000, 'toast-fix')">Staff</a></li>
+            <li class="nav-dropdown-settings"><a href="settings.html">Settings</a></li>
+            <li class="divider"></li>
+            <li><a id="ButtonLogOut" href="#!">Logout</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="nav-content">
+        <ul class="tabs tabs-transparent">
+          <div class="tabs-center">
+            <li class="tab"><a href="#registrants">Registrants</a></li>
+            <li class="tab statistics-tab disabled"><a href="#statistics">Statistics</a></li>
+            <li class="tab tools-tab disabled"><a href="#tools">Tools</a></li>
+          </div>
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+  <div id="content">
+    <div class="container">
+      <div id="loading-bar-wrapper">
+        <div id="loading-bar" class="progress">
+          <div class="indeterminate"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Registrants Tab -->
+    <div id="registrants" class="container" style="display: none;">
+      <div id="registrants-wrapper" class="top-space">
+        <div id="registrants-list" class="card">
+          <div id="registrants-list-card" class="card-content" style="padding-left: 50px; padding-right: 50px;">
+            <h4 class="center"> Registered Hackers </h4>
+            <h5 id="total-registrants" class="center"> Total: </h5>
+            <table id="registrants-table" class="striped responsive-table">
+              <thead>
+                <tr>
+                  <th id="id">ID</th>
+                  <th id="last_name">Last</th>
+                  <th id="first_name">First</th>
+                  <th id="email">Email</th>
+                  <th id="phone_number">Phone #</th>
+                  <th id="shirt_size">Shirt Size</th>
+                  <th id="dietary_restrictions">Dietary Restrictions</th>
+                  <th id="school_name">Date Registered</th>
+                  <th id="status">Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+
+              <tbody id="registrants-table-body">
+              </tbody>
+            </table>
+            <div class="card-action">
+              Search
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Checkout Warning Modal -->
+    <div id="check-out-warning-modal" class="modal">
+      <div class="modal-content">
+        <h4>Checkout Warning</h4>
+        <p>You are about to checkout <span id="check-out-warning-modal-span"></span>. Continue?</p>
+      </div>
+      <div class="modal-footer">
+        <a href="#!" class="modal-action modal-close waves-effect waves-grey btn-flat ">Cancel</a>
+        <a id="check-out-warning-modal-check-out" href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">CHECK OUT</a>
+      </div>
+    </div>
+
+    <!-- Statistics Tab -->
+    <div id="statistics" class="container" style="display: none;">
+      <div id="stats-wrapper" class="">
+        <!-- Total Counts -->
+        <div class="row">
+          <div class="col s3"></div>
+          <div id="totals" class="anti-card col s6 center">
+            <h4 class="center"> Totals </h4>
+            <div class="card-action">
+              <h5 id="totals-registrants" class="left"> Registrants: </h5>
+              <h5 id="totals-checked-in" class="right"> Checked In: </h5>
+            </div>
+            <div class="card-action" style="border-top: none"></div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <!-- Shirt Sizes -->
+        <div class="row">
+          <div id="shirt-sizes" class="card col s4">
+            <div id="shirt-sizes-card" class="card-content">
+              <h5 class="center"> Shirt Sizes </h5>
+              <table id="shirt-sizes-table" class="striped responsive-table">
+                <thead>
+                  <tr>
+                    <th id="size">Size</th>
+                    <th id="size-count">Count</th>
+                  </tr>
+                </thead>
+                <tbody id="shirt-sizes-table-body">
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="col s1"></div>
+          <div id="shirt-sizes-chart" class="card col s7">
+            <div id="shirt-sizes-chart-card" class="card-content" style="padding-left: 35px; padding-right: 35px;">
+              <canvas id="shirt-sizes-chart-canvas" width="100%" height="100%"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Dietary Restrictions-->
+        <div class="row">
+          <div id="dietary-restrictions" class="card col s4">
+            <div id="dietary-restrictions-card" class="card-content">
+              <h5 class="center"> Dietary Restrictions </h5>
+              <table id="dietary-restrictions-chart" class="striped responsive-table">
+                <thead>
+                  <tr>
+                    <th id="type">Type</th>
+                    <th id="type-count">Count</th>
+                  </tr>
+                </thead>
+                <tbody id="dietary-restrictions-table-body">
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="col s1">
+          </div>
+          <div id="dietary-restrictions-chart" class="card col s7">
+            <div id="dietary-restrictions-card" class="card-content" style="padding-left: 35px; padding-right: 35px;">
+              <canvas id="dietary-restrictions-chart-canvas" width="100%" height="100%"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Schools Restrictions-->
+        <div class="row">
+          <div id="schools" class="card col s5">
+            <div id="schools-card" class="card-content">
+              <h5 class="center"> Schools </h5>
+              <table id="schools-table" class="striped responsive-table">
+                <thead>
+                  <tr>
+                    <th id="school-name">School</th>
+                    <th id="school-count-count">Count</th>
+                  </tr>
+                </thead>
+                <tbody id="schools-table-body">
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="col s1">
+          </div>
+          <div id="schools-chart" class="card col s6">
+            <div id="schools-chart-card" class="card-content" style="padding-left: 35px; padding-right: 35px;">
+              <canvas id="schools-chart-canvas" width="100%" height="100%"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tools Tab -->
+    <div id="tools" class="container tools-tab" style="display: none;">
+      <div id="tools-wrapper" class="">
+        <div class="row row-no-margin">
+          <div class="col s2"></div>
+          <div id="raffle" class="anti-card col s8">
+            <h4 class="center"> Raffle </h4>
+            <div class="center">
+              <a id="raffle-create-new-button" class="waves-effect waves-light btn" onclick="Materialize.toast('Sorry, this feature is not available yet', 4000, 'toast-fix')">CREATE NEW</a>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col s2"></div>
+          <div id="raffle" class="card col s8 hide">
+            <div id="raffle-card" class="card-content">
+              <h4 class="center"> Raffle
+                <div class="right">
+                  <a class="waves-effect waves-light btn" style="display: none;">CREATE NEW</a>
+                </div>
+              </h4>
+              <table id="raffle-table" class="striped responsive-table" style="display: none;">
+                <thead>
+                  <tr>
+                    <td>#</td>
+                    <td>ID</td>
+                    <td>Last</td>
+                    <td>First</td>
+                    <td></td>
+                  </tr>
+                </thead>
+                <tbody id="raffle-table-body">
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/4.2.0/firebase.js"></script>
+  <script src="js/EVN_AuthenticationService.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/js/materialize.min.js"></script>
+  <script src="js/EVN_User.js"></script>
+  <script src="js/EVN_Registrants.js"></script>
+  <!--<script src="js/EVN_Load.js"></script>-->
+  <script>
+    $(document).ready(function () {
+      // the "href" attribute of the modal trigger must specify the modal ID that wants to be triggered
+      $('.modal').modal();
+    });
+    var APP_ID = "";
+    var SECRET = "";
+    var EVN_Dash = new EVN_Registrants();
+    AUTH.onAuthStateChanged(firebaseUser => {
+      if (firebaseUser) {
+        firebase.database().ref().child('Keys').once('value').then(function (snap) {
+          APP_ID = snap.val().MyMLH_APP_ID;
+          SECRET = snap.val().MyMLH_SECRET;
+          EVN_Dash.Load(APP_ID, SECRET);
+        });
+      } else {
+        IsFailure();
+      }
+    })
+  </script>
+</body>
+
+</html>

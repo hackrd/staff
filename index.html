@@ -16,7 +16,7 @@
     crossorigin="anonymous"></script>
   <script src="js/bootstrap.js"></script>
 
-  <!--Favicon Crap-->
+  <!--Favicon-->
   <link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
@@ -32,7 +32,9 @@
       <img src="img/hawk.png" class="logo">
       <h4 class="brand">Hack River Dell</h4>
       <h6 class="action-text">Administrative Login</h6>
-      <form class="form-signin" method="post">
+      <div id="login-error" class="alert alert-danger collapse in">
+      </div>
+      <form id="LoginForm" action="registrants.html" class="form-signin" method="post">
         <input id="EmailField" type="text" class="form-control" name="username" placeholder="Email Address" required="" autofocus=""
         />
         <input id="PasswordField" type="password" class="form-control" name="password" placeholder="Password" required="" />
@@ -45,7 +47,7 @@
 
       <p id="footer" class="animated">&copy; 2017 Hack River Dell</p>
       <script src="https://www.gstatic.com/firebasejs/4.2.0/firebase.js"></script>
-      <script src="auth/AuthenticationService.js"></script>
+      <script src="js/EVN_AuthenticationService.js"></script>
       <script>
         AUTH.onAuthStateChanged(firebaseUser => {
           if (firebaseUser) {

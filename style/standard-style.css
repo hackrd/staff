@@ -1,0 +1,19 @@
+html, body {
+  font-family: "Raleway", "Raleway-Regular", Tahoma, Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-width: 583px;
+  width: auto !important;
+}
+
+.wrapper {
+  float: left;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.column {
+  float: left;
+  height: 100%;
+}
