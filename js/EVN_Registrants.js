@@ -101,7 +101,8 @@ EVN_Registrants.prototype.ViewProfile = function (pID) {
 
                 // Warning Modals
                 if (EVN.mUser.HasPermission('ClearRegistrantLog') || EVN.mUser.HasPermission('All')) {
-                    $('#clear-log-btn').one("click", function () {
+                    $('#clear-log-btn').unbind('click');
+                    $('#clear-log-btn').click(function () {
                         $('#warning-modal').modal('open');
                     });
 
@@ -112,6 +113,9 @@ EVN_Registrants.prototype.ViewProfile = function (pID) {
                     $('#warning-modal-title').html('Clear Log');
                     $("#warning-modal-span").html('clear the log for ' + pID);
                     $('#warning-modal-confirm').html('CLEAR LOG');
+                }
+                else {
+                    $('#clear-log-btn').unbind('click');
                 }
             }
             else {
