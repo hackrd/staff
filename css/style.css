@@ -176,7 +176,7 @@ nav {
     padding: 4px 20px;
 }
 
-.warning-modal-confirm {
+#warning-modal-confirm {
     color: white;
     background-color: #f35c5c
 }
@@ -200,4 +200,13 @@ nav {
 
 #eventman-version {
     font-size: 1.25rem;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+#clear-log-btn {
+    color: white;
+    background-color: #f35c5c
 }

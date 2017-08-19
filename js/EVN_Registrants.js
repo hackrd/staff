@@ -18,12 +18,9 @@ var EVN_Registrants = function () {
     this.mSchools = {};
     this.mDateRegistered = {};
 
+    this.mMyMLHReference = {};
     this.mTotalRegistrants = null;
     this.mTotalAttended = null;
-
-    this.mUserType = "NULL";
-    this.mUserPermissions = "NULL";
-    this.mUid = "NULL";
 
     this.mUser = new EVN_User();
 }
@@ -32,12 +29,13 @@ EVN_Registrants.prototype.FormatESTTimestamp = function (pTimestamp) {
     var Timestamp = pTimestamp;
     Timestamp = Timestamp.split(' ');
     //console.log(Timestamp);
-    Timestamp.pop();
-    Timestamp.pop();
-    Timestamp.pop();
-    Timestamp.pop();
     Timestamp.push('EST');
-    Timestamp = Timestamp.join('-');
+    var DatePart = [Timestamp[0], Timestamp[1], Timestamp[2], Timestamp[3]];
+    DatePart = DatePart.join('-');
+    var TimePart = [Timestamp[4], Timestamp[9]];
+    TimePart = TimePart.join('-');
+    Timestamp = DatePart + '@' + TimePart;
+    console.log(Timestamp);
     return Timestamp;
 }
 
@@ -58,15 +56,74 @@ EVN_Registrants.prototype.CreateUser = function (pUid, pUsername, pType) {
     this.mUserType = pType;
 }
 
-EVN_Registrants.prototype.ClearRegistrantHistory = function (pID) {
-    if (EVN.mUser.HasPermission('ManageRegistrants') || EVN.mUser.HasPermission('All')) {
-        var ID = "ID_" + pID;
-        firebase.database().ref().child('APPDATA').child('Registrants').child(ID).set({
-            Status: false,
+EVN_Registrants.prototype.ClearRegistrantLog = function (pID) {
+    var EVN = this;
+    if (EVN.mUser.HasPermission('ClearRegistrantLog') || EVN.mUser.HasPermission('All')) {
+        firebase.database().ref().child('APPDATA').child('Registrants').child(pID).set({
+            Status: "NOT_ATTENDED",
         });
+        $('#profile-check-in-out-log-table-body').html('');
+        $('#profile-status').html('NOT_ATTENDED');
         EVN.mTotalAttended--;
         $("#totals-checked-in").html("Checked In: " + EVN.mTotalAttended);
-        console.log("Successfully Reset User " + ID);
+        Materialize.toast("Successfully cleared log for " + pID, 4000, "toast-fix");
+        console.log("Successfully cleared log for " + pID);
+    }
+}
+
+EVN_Registrants.prototype.ViewProfile = function (pID) {
+    var EVN = this;
+
+    if (EVN.mUser.HasPermission('ViewRegistrants') || EVN.mUser.HasPermission('All')) {
+        // Convert ID
+        var ID = pID.split('_');
+        ID = ID.pop();
+        // Fill modal with information
+        var Data = EVN.mData[EVN.mMyMLHReference[pID]];
+        var ProfileInfo = "";
+        var CheckInOutLog = "";
+        var CheckInOutLogData = "";
+
+        firebase.database().ref().child('APPDATA').child('Registrants').child(pID).once('value').then(function (snap) {
+            ProfileInfo = "<span class='bold'>ID: </span>" + ID + "<br /><span class='bold'>Status: </span><span id='profile-status'>" + snap.val().Status + "</span><br /><span class='bold'>First Name: </span>" + Data.first_name + "<br /><span class='bold'>Last Name: </span>" + Data.last_name + "<br /><span class='bold'>DOB: </span>" + Data.date_of_birth + "<br /><span class='bold'>Gender: </span>" + Data.gender + "<br /><span class='bold'>Email: </span>" + Data.email + "<br /><span class='bold'>Phone #: </span>" + Data.phone_number + "<br /><span class='bold'>Shirt Size: </span>" + Data.shirt_size + "<br /><span class='bold'>Dietary Restrictions: </span>" + Data.dietary_restrictions + "<br /><span class='bold'>Special Needs: </span>" + Data.special_needs + "<br /><span class='bold'>Date Registered: </span>" + Data.updated_at;
+
+            if (typeof snap.val().Log != 'undefined') {
+                CheckInOutLogData = snap.val().Log;
+                CheckInOutLogData = CheckInOutLogData.split(' ');
+                var TotalEntries = Object.keys(CheckInOutLogData).length;
+                var CheckInOutLogEntry = "";
+                for (var i = 0; i < TotalEntries; i++) {
+                    CheckInOutLogEntry = CheckInOutLogData[i];
+                    CheckInOutLogEntry = CheckInOutLogEntry.split('%');
+                    CheckInOutLog += "<tr><td>" + CheckInOutLogEntry[0] + "</td><td>" + CheckInOutLogEntry[1] + "</td><td>" + CheckInOutLogEntry[2] + "</td></tr>";
+                }
+                $('#profile-check-in-out-log-table-body').html(CheckInOutLog);
+
+                // Warning Modals
+                if (EVN.mUser.HasPermission('ClearRegistrantLog') || EVN.mUser.HasPermission('All')) {
+                    $('#clear-log-btn').one("click", function () {
+                        $('#warning-modal').modal('open');
+                    });
+
+                    $("#warning-modal-confirm").unbind("click");
+                    $("#warning-modal-confirm").one("click", function () {
+                        EVN.ClearRegistrantLog(pID);
+                    });
+                    $('#warning-modal-title').html('Clear Log');
+                    $("#warning-modal-span").html('clear the log for ' + pID);
+                    $('#warning-modal-confirm').html('CLEAR LOG');
+                }
+            }
+            else {
+                $('#profile-check-in-out-log-table-body').html('');
+                $('#clear-log-btn').unbind('click');
+            }
+
+            $('#profile-content').html(ProfileInfo)
+
+            // Open Modal
+            $('#profile-modal').modal('open');
+        });
     }
 }
 
@@ -82,16 +139,15 @@ EVN_Registrants.prototype.CheckIn = function (pID) {
     firebase.database().ref().child('APPDATA').child('Registrants').child(pID).once('value').then(function (snap) {
         if (typeof snap.val().Log != 'undefined') {
             OldLog = snap.val().Log;
-        Update = OldLog + " CHECKIN@ " + Timestamp + "#" + EVN.mUser.mUsername;
-        }
-        else {
-            Update = "CHECKIN@" + Timestamp + "#" + EVN.mUser.mUsername;
+            Update = OldLog + " CHECKIN%" + Timestamp + "%" + EVN.mUser.mUsername;
+        } else {
+            Update = "CHECKIN%" + Timestamp + "%" + EVN.mUser.mUsername;
         }
 
         //formatDate(Timestamp);
         //console.log(CurrentDate);
         firebase.database().ref().child('APPDATA').child('Registrants').child(ID).update({
-            Status: true,
+            Status: "CHECKED_IN",
             Log: Update
         });
     });
@@ -103,9 +159,9 @@ EVN_Registrants.prototype.CheckIn = function (pID) {
 
 EVN_Registrants.prototype.CheckOut = function (pID) {
     var EVN = this;
-    if (EVN.mStatus[pID].Status != false) {
-        $("#check-out-warning-modal-confirm").unbind("click");
-        $("#check-out-warning-modal-confirm").one("click", function () {
+    if (EVN.mStatus[pID].Status == "CHECKED_IN") {
+        $("#warning-modal-confirm").unbind("click");
+        $("#warning-modal-confirm").one("click", function () {
             var ID = pID;
             var Timestamp = new Date();
             Timestamp = Timestamp.toString();
@@ -116,26 +172,27 @@ EVN_Registrants.prototype.CheckOut = function (pID) {
             firebase.database().ref().child('APPDATA').child('Registrants').child(ID).once('value').then(function (snap) {
                 if (typeof snap.val().Log != 'undefined') {
                     OldLog = snap.val().Log;
-                    Update = OldLog + " CHECKOUT@" + Timestamp + "#" + EVN.mUser.mUsername;
+                    Update = OldLog + " CHECKOUT%" + Timestamp + "%" + EVN.mUser.mUsername;
+                } else {
+                    Update = "CHECKOUT%" + Timestamp + "%" + EVN.mUser.mUsername;
                 }
-                else {
-                    Update = "CHECKOUT@" + Timestamp + "#" + EVN.mUser.mUsername;
-                }
-        
+
                 //formatDate(Timestamp);
                 //console.log(CurrentDate);
                 firebase.database().ref().child('APPDATA').child('Registrants').child(ID).update({
-                    Status: false,
+                    Status: "CHECKED_OUT",
                     Log: Update
                 });
             });
+            EVN.mTotalAttended--;
+            $("#totals-checked-in").html("Checked In: " + EVN.mTotalAttended);
             Materialize.toast(pID + " was successfully checked out", 4000, "toast-fix");
-            console.log("Successfully Checked Out " + pID);
+            console.log("Successfully checked out " + pID);
         });
-        $("#check-out-warning-modal-span").html(pID);
-        $("#check-out-warning-modal").modal('open');
-        EVN.mTotalAttended--;
-        $("#totals-checked-in").html("Checked In: " + EVN.mTotalAttended);
+        $('#warning-modal-title').html('Check Out Warning');
+        $("#warning-modal-span").html('check out ' + pID);
+        $('#warning-modal-confirm').html('CHECK OUT');
+        $("#warning-modal").modal('open');
     }
 }
 
@@ -147,7 +204,7 @@ EVN_Registrants.prototype.CreateFirebaseRegistrantEntry = function (pID) {
         ID = ID.split('-');
         ID = ID.pop();
         EVN.CheckIn(ID);
-        console.log(ID + " Successfully Checked In");
+        console.log("Successfully checked in " + ID);
     });
     $("#more-check-out-" + ID).click(function (event) {
         ID = event.target.id;
@@ -156,10 +213,10 @@ EVN_Registrants.prototype.CreateFirebaseRegistrantEntry = function (pID) {
         EVN.CheckOut(ID);
     });
     firebase.database().ref().child('APPDATA').child('Registrants').child(pID).set({
-        Status: false,
+        Status: "NOT_ATTENDED",
     });
     EVN.mStatus[ID] = {
-        "Status": false
+        "Status": "NOT_ATTENDED"
     };
 }
 
@@ -223,7 +280,7 @@ EVN_Registrants.prototype.LoadCharts = function () {
     // FINISH THIS
     DateJoinedLabels = Object.keys(this.mDateRegistered);
     for (var i = 0; i < DateJoinedLabels.length; i++) {
-        this.mDateRegistered = this.mDateRegistered.created_at[DateJoinedLabels[i]].split('-');
+        this.mDateRegistered = this.mDateRegistered.updated_at[DateJoinedLabels[i]].split('-');
     }
     //this.mDateRegistered.sort();
     console.log(this.mDateRegistered);
@@ -285,17 +342,18 @@ EVN_Registrants.prototype.HandleData = function (pData) {
 
         for (var i = 0; i < pData.length; i++) {
             Data = pData[i];
-            Data.created_at = Data.created_at.split('T');
-            Data.created_at.pop();
+            Data.updated_at = Data.updated_at.split('T');
+            Data.updated_at.pop();
             Data.shirt_size = Data.shirt_size.replace(/\s/g, "");
             Data.school.name = Data.school.name.toUpperCase().replace(/\s/g, "");
 
             ID = "ID_" + Data.id;
+            EVN.mMyMLHReference[ID] = i;
             //console.log(ID);
             //console.log(snap.val()[ID]);
             //console.log(snap.val().ID_16893);
             if (typeof snap.val()[ID] != 'undefined') {
-                if (snap.val()[ID].Status == true) {
+                if (snap.val()[ID].Status == "CHECKED_IN") {
                     Status = "<a id=\"status-" + ID + "\" class=\"btn-flat checked-in disabled\">CHECKED IN</a>";
                     EVN.mTotalAttended++;
                 } else {
@@ -308,17 +366,17 @@ EVN_Registrants.prototype.HandleData = function (pData) {
 
             // Dropdown
             if (EVN.mUser.mType == "ADMIN") {
-                More = "<a class=\"waves-effect waves-grey btn-flat more-btn dropdown-button\" href=\'#\' data-activates=\"more-" + ID + "\"><i class=\"material-icons\">more_vert</i></a><ul id=\"more-" + ID + "\" class=\'dropdown-content\'><li><a id=\"more-profile-" + ID + "\" class=\"more-profile-btn\" href=\"#!\" onclick=\"Materialize.toast('Sorry, this feature is not available yet', 4000, 'toast-fix')\">Profile</a></li><li class=\"divider\"></li><li><a id=\"more-check-out-" + ID + "\" class=\"more-check-out-btn\" href=\"#!\">Check Out</a></li></ul>";
+                More = "<a class=\"waves-effect waves-grey btn-flat more-btn dropdown-button\" href=\'#\' data-activates=\"more-" + ID + "\"><i class=\"material-icons\">more_vert</i></a><ul id=\"more-" + ID + "\" class=\'dropdown-content\'><li><a id=\"more-profile-" + ID + "\" class=\"more-profile-btn\" href=\"#!\">Profile</a></li><li class=\"divider\"></li><li><a id=\"more-check-out-" + ID + "\" class=\"more-check-out-btn\" href=\"#!\">Check Out</a></li></ul>";
             } else {
-                More = "<a class=\"waves-effect waves-grey btn-flat more-btn dropdown-button\" href=\'#\' data-activates=\"more-" + ID + "\"><i class=\"material-icons\">more_vert</i></a><ul id=\"more-" + ID + "\" class=\'dropdown-content\'><li><a id=\"more-profile-" + ID + "\" class=\"more-profile-btn\" href=\"#!\" onclick=\"Materialize.toast('Sorry, this feature is not available yet', 4000, 'toast-fix')\">Profile</a></li><li class=\"divider\"></li></ul>";
+                More = "<a class=\"waves-effect waves-grey btn-flat more-btn dropdown-button\" href=\'#\' data-activates=\"more-" + ID + "\"><i class=\"material-icons\">more_vert</i></a><ul id=\"more-" + ID + "\" class=\'dropdown-content\'><li><a id=\"more-profile-" + ID + "\" class=\"more-profile-btn\" href=\"#!\">Profile</a></li><li class=\"divider\"></li></ul>";
             }
 
-            Entry = "<tr id=\"user_" + ID + "\"><td>" + Data.id + "</td><td>" + Data.last_name + "</td><td>" + Data.first_name + "</td><td>" + Data.email + "</td><td>" + Data.phone_number + "</td><td>" + Data.shirt_size + "</td><td>" + Data.dietary_restrictions + "</td><td>" + Data.created_at + "</td><td class=\"status-column center\">" + Status + "</td><td>" + More + "</td></tr>";
+            Entry = "<tr id=\"user_" + ID + "\"><td>" + Data.id + "</td><td>" + Data.last_name + "</td><td>" + Data.first_name + "</td><td>" + Data.email + "</td><td>" + Data.phone_number + "</td><td>" + Data.shirt_size + "</td><td>" + Data.dietary_restrictions + "</td><td>" + Data.updated_at + "</td><td class=\"status-column center\">" + Status + "</td><td>" + More + "</td></tr>";
             RegistrantsTableContent.push(Entry);
 
             // Count Totals
-            if (!EVN.mDateRegistered[Data.created_at]) {
-                EVN.mDateRegistered[Data.created_at] = 0;
+            if (!EVN.mDateRegistered[Data.updated_at]) {
+                EVN.mDateRegistered[Data.updated_at] = 0;
             }
             if (!EVN.mSizes[Data.shirt_size]) {
                 EVN.mSizes[Data.shirt_size] = 0;
@@ -380,13 +438,13 @@ EVN_Registrants.prototype.HandleData = function (pData) {
         for (var i = 0; i < IDs.length; i++) {
             ID = IDs[i];
 
-            if (snap.val()[ID].Status == false) {
+            if (snap.val()[ID].Status == "NOT_ATTENDED" || snap.val()[ID].Status == "CHECKED_OUT") {
                 $("#status-" + ID).click(function (event) {
                     ID = event.target.id;
                     ID = ID.split('-');
                     ID = ID.pop();
                     EVN.CheckIn(ID);
-                    console.log(ID + " Successfully Checked In");
+                    console.log("Successfully checked in " + ID);
                 });
             }
 
@@ -395,6 +453,13 @@ EVN_Registrants.prototype.HandleData = function (pData) {
                 ID = ID.split('-');
                 ID = ID.pop();
                 EVN.CheckOut(ID);
+            });
+
+            $('#more-profile-' + ID).click(function (event) {
+                ID = event.target.id;
+                ID = ID.split('-');
+                ID = ID.pop();
+                EVN.ViewProfile(ID);
             });
         }
 
@@ -416,146 +481,18 @@ EVN_Registrants.prototype.HandleData = function (pData) {
     });
 }
 
-EVN_Registrants.prototype.LoadAdminContent = function (pAPP_ID, pSECRET) {
-    var EVN = this;
-    if (EVN.mUser.HasPermission('All')) {
-    $(".statistics-tab").removeClass('disabled');
-    $(".tools-tab").removeClass('disabled');
-    }
-    var Hash = window.location.hash;
-    Hash = Hash.toLowerCase();
-    $.get("https://my.mlh.io/api/v2/users?client_id=" + pAPP_ID + "&secret=" + pSECRET + "&page=1", function (pData) {
-        EVN.mData = pData.data;
-
-        EVN.HandleData(EVN.mData);
-        //console.log(TableContent);
-        $("#loading-bar-wrapper").hide();
-        if (Hash == "#statistics") {
-            $("#statistics").show();
-        } else {
-            if (Hash == "#tools") {
-                $("#tools").show();
-            } else {
-                $("#registrants").show();
-            }
-        }
-
-        const dbRefObject = firebase.database().ref().child('APPDATA').child('Registrants');
-        dbRefObject.on('value', snap => {
-            var ID = "";
-            //console.log(snap.val()[ID].Status);
-            var IDs = Object.keys(EVN.mStatus);
-            var ButtonID = $("#status-" + ID);
-
-            for (var i = 0; i < IDs.length; i++) {
-                ID = IDs[i];
-                ButtonID = $("#status-" + ID);
-                if (typeof snap.val()[ID] != 'undefined') {
-                    if (EVN.mStatus[ID].Status != snap.val()[ID].Status) {
-                        if (snap.val()[ID].Status == true) {
-                            ButtonID.addClass('checked-in disabled');
-                            ButtonID.removeClass('waves-effect waves-teal check-in');
-                            ButtonID.html("CHECKED IN");
-                            EVN.mStatus[ID].Status = snap.val()[ID].Status;
-                            ButtonID.unbind("click");
-
-                            EVN.mTotalAttended++;
-                            $("#totals-checked-in").html("Checked In: " + EVN.mTotalAttended);
-                            //console.log(ID + " Successfully Checked In");
-                        }
-                        if (snap.val()[ID].Status == false) {
-                            ButtonID.addClass('waves-effect waves-teal check-in');
-                            ButtonID.removeClass('checked-in disabled');
-                            ButtonID.html("CHECK-IN");
-                            EVN.mStatus[ID].Status = snap.val()[ID].Status;
-                            ButtonID.click(function () {
-                                ID = event.target.id;
-                                ID = ID.split('-');
-                                ID = ID.pop();
-                                EVN.CheckIn(ID);
-                                console.log(ID + " Successfully Checked In");
-                            });
-                        }
-                    }
-                }
-            }
-        });
-    });
-}
-
-EVN_Registrants.prototype.LoadStaffContent = function (pAPP_ID, pSECRET) {
-    $(".statistics-tab").removeClass('disabled');
-    $("#tools").remove();
-    $(".nav-dropdown-staff").remove();
-
-    var EVN = this;
-    var Hash = window.location.hash;
-    Hash = Hash.toLowerCase();
-    $.get("https://my.mlh.io/api/v2/users?client_id=" + pAPP_ID + "&secret=" + pSECRET + "&page=1", function (pData) {
-        EVN.mData = pData.data;
-
-        EVN.HandleData(EVN.mData);
-        //console.log(TableContent);
-        $("#loading-bar-wrapper").hide();
-        if (Hash == "#statistics") {
-            $("#statistics").show();
-        } else {
-            $("#registrants").show();
-        }
-
-        const dbRefObject = firebase.database().ref().child('APPDATA').child('Registrants');
-        dbRefObject.on('value', snap => {
-            //EVN.mStatus = snap.val();
-            var ID = "";
-            //console.log(snap.val()[ID].Status);
-            var IDs = Object.keys(EVN.mStatus);
-            var ButtonID = $("#status-" + ID);
-
-            for (var i = 0; i < IDs.length; i++) {
-                ID = IDs[i];
-                ButtonID = $("#status-" + ID);
-                if (typeof snap.val()[ID] != 'undefined') {
-                    if (EVN.mStatus[ID].Status != snap.val()[ID].Status) {
-                        if (snap.val()[ID].Status == true) {
-                            ButtonID.addClass('checked-in disabled');
-                            ButtonID.removeClass('waves-effect waves-teal check-in');
-                            ButtonID.html("CHECKED IN");
-                            EVN.mStatus[ID].Status = snap.val()[ID].Status;
-                            ButtonID.unbind("click");
-
-                            EVN.mTotalAttended++;
-                            $("#totals-checked-in").html("Checked In: " + EVN.mTotalAttended);
-                            //console.log(ID + " Successfully Checked In");
-                        }
-                        if (snap.val()[ID].Status == false) {
-                            ButtonID.addClass('waves-effect waves-teal check-in');
-                            ButtonID.removeClass('checked-in disabled');
-                            ButtonID.html("CHECK-IN");
-                            EVN.mStatus[ID].Status = snap.val()[ID].Status;
-                            ButtonID.click(function () {
-                                ID = event.target.id;
-                                ID = ID.split('-');
-                                ID = ID.pop();
-                                EVN.CheckIn(ID);
-                                console.log(ID + " Successfully Checked In");
-                            });
-                        }
-                    }
-                }
-            }
-        })
-    });
-}
-
 EVN_Registrants.prototype.LoadContent = function (pAPP_ID, pSECRET) {
     var EVN = this;
     var Hash = window.location.hash;
     Hash = Hash.toLowerCase();
 
+    if (!EVN.mUser.HasPermission('ClearRegistrantLog') && !EVN.mUser.HasPermission('All')) {
+        $('#clear-log-btn').remove();
+    }
+
     if (EVN.mUser.HasPermission('ManageUsers') || EVN.mUser.HasPermission('All')) {
         // View Staff panel
-    }
-    else {
+    } else {
         $(".nav-dropdown-staff").remove();
     }
 
@@ -570,17 +507,15 @@ EVN_Registrants.prototype.LoadContent = function (pAPP_ID, pSECRET) {
             if (EVN.mUser.HasPermission('ViewStatistics') || EVN.mUser.HasPermission('All')) {
                 // Stats panel
                 $('.statistics-tab').removeClass('disabled');
-            }
-            else {
+            } else {
                 $('#statistics').remove();
             }
 
-                        
+
             if (EVN.mUser.HasPermission('CreateRegistrantRaffle') || EVN.mUser.HasPermission('DrawRegistrantRaffle') || EVN.mUser.HasPermission('All')) {
                 // Load tools tab
                 $('.tools-tab').removeClass('disabled');
-            }
-            else {
+            } else {
                 $('#tools').remove();
             }
 
@@ -598,24 +533,24 @@ EVN_Registrants.prototype.LoadContent = function (pAPP_ID, pSECRET) {
                 //console.log(snap.val()[ID].Status);
                 var IDs = Object.keys(EVN.mStatus);
                 var ButtonID = $("#status-" + ID);
-    
+
                 for (var i = 0; i < IDs.length; i++) {
                     ID = IDs[i];
                     ButtonID = $("#status-" + ID);
                     if (typeof snap.val()[ID] != 'undefined') {
                         if (EVN.mStatus[ID].Status != snap.val()[ID].Status) {
-                            if (snap.val()[ID].Status == true) {
+                            if (snap.val()[ID].Status == "CHECKED_IN") {
                                 ButtonID.addClass('checked-in disabled');
                                 ButtonID.removeClass('waves-effect waves-teal check-in');
                                 ButtonID.html("CHECKED IN");
                                 EVN.mStatus[ID].Status = snap.val()[ID].Status;
                                 ButtonID.unbind("click");
-    
+
                                 EVN.mTotalAttended++;
                                 $("#totals-checked-in").html("Checked In: " + EVN.mTotalAttended);
                                 //console.log(ID + " Successfully Checked In");
                             }
-                            if (snap.val()[ID].Status == false) {
+                            if (snap.val()[ID].Status == "CHECKED_OUT" || snap.val()[ID].Status == "NOT_ATTENDED") {
                                 ButtonID.addClass('waves-effect waves-teal check-in');
                                 ButtonID.removeClass('checked-in disabled');
                                 ButtonID.html("CHECK-IN");
@@ -625,7 +560,7 @@ EVN_Registrants.prototype.LoadContent = function (pAPP_ID, pSECRET) {
                                     ID = ID.split('-');
                                     ID = ID.pop();
                                     EVN.CheckIn(ID);
-                                    console.log(ID + " Successfully Checked In");
+                                    console.log("Successfully checked in " + ID);
                                 });
                             }
                         }
@@ -634,71 +569,6 @@ EVN_Registrants.prototype.LoadContent = function (pAPP_ID, pSECRET) {
             });
         });
     }
-
-    /*var EVN = this;
-    if (EVN.mUser.HasPermission('All')) {
-    $(".statistics-tab").removeClass('disabled');
-    $(".tools-tab").removeClass('disabled');
-    }
-    var Hash = window.location.hash;
-    Hash = Hash.toLowerCase();
-    $.get("https://my.mlh.io/api/v2/users?client_id=" + pAPP_ID + "&secret=" + pSECRET + "&page=1", function (pData) {
-        EVN.mData = pData.data;
-
-        EVN.HandleData(EVN.mData);
-        //console.log(TableContent);
-        $("#loading-bar-wrapper").hide();
-        if (Hash == "#statistics") {
-            $("#statistics").show();
-        } else {
-            if (Hash == "#tools") {
-                $("#tools").show();
-            } else {
-                $("#registrants").show();
-            }
-        }
-
-        const dbRefObject = firebase.database().ref().child('APPDATA').child('Registrants');
-        dbRefObject.on('value', snap => {
-            var ID = "";
-            //console.log(snap.val()[ID].Status);
-            var IDs = Object.keys(EVN.mStatus);
-            var ButtonID = $("#status-" + ID);
-
-            for (var i = 0; i < IDs.length; i++) {
-                ID = IDs[i];
-                ButtonID = $("#status-" + ID);
-                if (typeof snap.val()[ID] != 'undefined') {
-                    if (EVN.mStatus[ID].Status != snap.val()[ID].Status) {
-                        if (snap.val()[ID].Status == true) {
-                            ButtonID.addClass('checked-in disabled');
-                            ButtonID.removeClass('waves-effect waves-teal check-in');
-                            ButtonID.html("CHECKED IN");
-                            EVN.mStatus[ID].Status = snap.val()[ID].Status;
-                            ButtonID.unbind("click");
-
-                            EVN.mTotalAttended++;
-                            $("#totals-checked-in").html("Checked In: " + EVN.mTotalAttended);
-                            //console.log(ID + " Successfully Checked In");
-                        }
-                        if (snap.val()[ID].Status == false) {
-                            ButtonID.addClass('waves-effect waves-teal check-in');
-                            ButtonID.removeClass('checked-in disabled');
-                            ButtonID.html("CHECK-IN");
-                            EVN.mStatus[ID].Status = snap.val()[ID].Status;
-                            ButtonID.click(function () {
-                                ID = event.target.id;
-                                ID = ID.split('-');
-                                ID = ID.pop();
-                                EVN.CheckIn(ID);
-                                console.log(ID + " Successfully Checked In");
-                            });
-                        }
-                    }
-                }
-            }
-        })
-    });*/
 }
 
 EVN_Registrants.prototype.Load = function (pAPP_ID, pSECRET) {
@@ -717,38 +587,6 @@ EVN_Registrants.prototype.Load = function (pAPP_ID, pSECRET) {
     Username = Username.split('.');
     Username = Username.join('');
     EVN.mUser.Load(EVN.Uid, function () {
-        /*if (EVN.mUser.mType == "ADMIN") {
-            EVN.LoadAdminContent(pAPP_ID, pSECRET);
-        }
-        else {
-            if (EVN.mUser.mType == "STAFF") {
-                EVN.LoadStaffContent(pAPP_ID, pSECRET);
-            }
-            else {
-                // Load error "invalid account type" page
-                alert("Invalid Account Type");
-            }
-        }*/
         EVN.LoadContent(pAPP_ID, pSECRET);
     });
-    /*firebase.database().ref().child('APPDATA').child('Users').once('value').then(function (snap) {
-        if (typeof snap.val()[EVN.Uid] != 'undefined') {
-            console.log("User Account Type: " + snap.val()[EVN.Uid].Type);
-            EVN.mUserType = snap.val()[EVN.Uid].Type;
-            if (EVN.mUserType == "ADMIN") {
-                EVN.LoadAdminContent(pAPP_ID, pSECRET);
-            } else {
-                if (EVN.mUserType == "STAFF") {
-                    EVN.LoadStaffContent(pAPP_ID, pSECRET);
-                } else {
-                    // Load error "invalid account type" page
-                    alert("Invalid Account Type");
-                }
-            }
-        } else {
-            EVN.CreateUser(EVN.Uid, Username, "STAFF");
-            EVN.LoadStaffContent(pAPP_ID, pSECRET);
-            console.log(EVN.mUserType);
-        }
-    });*/
 }

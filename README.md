@@ -2,6 +2,14 @@
 Hack River Dell Staff Access Panel
 
 Versions will be published under two names: Prototype and Release. Only published versions will be noted on this document.
+## PROTOTYPE v0.17.0
+### New Features
+##### Registrants Page
+- Profiles now load with full registrant information
+- Profile displays action log (check in/out times, etc.)
+- Clear registrant log button in profile
+### Changelog
+- Removed legacy code
 ## PROTOTYPE v0.16.2
 ### Changelog
 - Check In/Out now logs the username of the account who performed the action

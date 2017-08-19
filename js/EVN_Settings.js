@@ -50,10 +50,10 @@ EVN_Settings.prototype.CreateUser = function (pUid, pUsername, pType) {
     this.mUserType = pType;
 }
 
-EVN_Settings.prototype.ClearAllRegistrantsHistory = function () {
+EVN_Settings.prototype.ClearAllRegistrantsLog = function () {
     var EVN = this;
 
-    if (EVN.mUser.HasPermission('ManageRegistrants') || EVN.mUser.HasPermission('All')) {
+    if (EVN.mUser.HasPermission('ClearAllRegistrantsLog') || EVN.mUser.HasPermission('All')) {
         firebase.database().ref().child('APPDATA').child('Registrants').once('value').then(function (snap) {
             var ID = "";
             var IDs = Object.keys(snap.val());
@@ -61,11 +61,11 @@ EVN_Settings.prototype.ClearAllRegistrantsHistory = function () {
             for (var i = 0; i < IDs.length; i++) {
                 ID = IDs[i];
                 firebase.database().ref().child('APPDATA').child('Registrants').child(ID).set({
-                    Status: false,
+                    Status: "NOT_ATTENDED",
                 });
             }
-            //console.log("Successfully Reset All Users");
-            Materialize.toast("Successfully cleared all registrant history", 4000, "toast-fix");
+            Materialize.toast("Successfully cleared logs for all registrants", 4000, "toast-fix");
+            console.log('Successfully cleared logs for all registrants');
         });
     }
 }
@@ -93,10 +93,10 @@ EVN_Settings.prototype.LoadContent = function () {
         }
     });
 
-    if (EVN.mUser.HasPermission('ManageRegistrants') || EVN.mUser.HasPermission('All')) {
+    if (EVN.mUser.HasPermission('ClearAllRegistrantsLog') || EVN.mUser.HasPermission('All')) {
         $('.manage-tab').removeClass('disabled');
         $('#clear-registrants-warning-modal-confirm').click(function () {
-            EVN.ClearAllRegistrantsHistory();
+            EVN.ClearAllRegistrantsLog();
         });
     }
     else {
