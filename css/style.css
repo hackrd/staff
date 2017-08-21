@@ -207,6 +207,10 @@ nav {
 }
 
 #clear-log-btn {
+    margin-left: 5px;
+}
+
+.red-btn {
     color: white;
     background-color: #f35c5c
 }
