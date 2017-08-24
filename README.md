@@ -2,6 +2,11 @@
 Hack River Dell Staff Access Panel
 
 Versions will be published under two names: Prototype and Release. Only published versions will be noted on this document.
+## PROTOTYPE v0.18.0
+### New Features
+##### Registrants Page
+- Banning / Unbanning now available
+- Banned registrants appear in a table on the bottom of the "registrants" tab
 ## PROTOTYPE v0.17.2
 ### Changelog
 - Added 'Schools' to profile view

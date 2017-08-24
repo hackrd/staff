@@ -21,6 +21,7 @@ var EVN_Registrants = function () {
     this.mMyMLHReference = {};
     this.mTotalRegistrants = null;
     this.mTotalAttended = null;
+    this.mTotalBanned = null;
 
     this.mUser = new EVN_User();
 }
@@ -87,6 +88,33 @@ EVN_Registrants.prototype.ViewProfile = function (pID) {
         firebase.database().ref().child('APPDATA').child('Registrants').child(pID).once('value').then(function (snap) {
             ProfileInfo = "<span class='bold'>ID: </span>" + ID + "<br /><span class='bold'>Status: </span><span id='profile-status'>" + snap.val().Status + "</span><br /><span class='bold'>First Name: </span>" + Data.first_name + "<br /><span class='bold'>Last Name: </span>" + Data.last_name + "<br /><span class='bold'>DOB: </span>" + Data.date_of_birth + "<br /><span class='bold'>Gender: </span>" + Data.gender + "<br /><span class='bold'>Email: </span>" + Data.email + "<br /><span class='bold'>Phone #: </span>" + Data.phone_number + "<br /><span class='bold'>Shirt Size: </span>" + Data.shirt_size + "<br /><span class='bold'>School: </span>" + Data.school.name + "<br /><span class='bold'>Dietary Restrictions: </span>" + Data.dietary_restrictions + "<br /><span class='bold'>Special Needs: </span>" + Data.special_needs + "<br /><span class='bold'>Date Registered: </span>" + Data.updated_at;
 
+            // Ban/Unban button
+ 
+                if (snap.val().Status == "BANNED" && (EVN.mUser.HasPermission('UnbanRegistrants') || EVN.mUser.HasPermission('All'))) {
+                    $('#ban-btn').hide();
+                    $('#unban-btn').show();
+                    $('#unban-btn').unbind('click');
+                    $('#unban-btn').click(function () {
+                        EVN.Unban(pID);
+                        })
+                }
+                else {
+                    if (EVN.mUser.HasPermission('BanRegistrants') || EVN.mUser.HasPermission('All')) {
+                        $('#unban-btn').hide();
+                        $('#ban-btn').show();
+                        $('#ban-btn').unbind('click');
+                        $('#ban-btn').click(function () {
+                            EVN.Ban(pID);
+                        });
+                    }
+                    else {
+                        $('#ban-btn').unbind('click');
+                        $('#unban-btn').unbind('click');
+                        $('#ban-btn').hide();
+                        $('#unban-btn').hide();
+                    }
+                }
+
             if (typeof snap.val().Log != 'undefined') {
                 CheckInOutLogData = snap.val().Log;
                 CheckInOutLogData = CheckInOutLogData.split(' ');
@@ -116,6 +144,7 @@ EVN_Registrants.prototype.ViewProfile = function (pID) {
                 }
                 else {
                     $('#clear-log-btn').unbind('click');
+                    $('#clear-log-btn').hide();
                 }
             }
             else {
@@ -128,6 +157,86 @@ EVN_Registrants.prototype.ViewProfile = function (pID) {
             // Open Modal
             $('#profile-modal').modal('open');
         });
+    }
+}
+
+EVN_Registrants.prototype.Ban = function (pID) {
+    var EVN = this;
+    if (EVN.mStatus[pID].Status != "BANNED") {
+        $("#warning-modal-confirm").unbind("click");
+        $("#warning-modal-confirm").one("click", function () {
+            var ID = pID;
+            var Timestamp = new Date();
+            Timestamp = Timestamp.toString();
+            Timestamp = EVN.FormatESTTimestamp(Timestamp);
+
+            var OldLog = "";
+            var Update = "";
+            firebase.database().ref().child('APPDATA').child('Registrants').child(ID).once('value').then(function (snap) {
+                if (typeof snap.val().Log != 'undefined') {
+                    OldLog = snap.val().Log;
+                    Update = OldLog + " BANNED%" + Timestamp + "%" + EVN.mUser.mUsername;
+                } else {
+                    Update = "BANNED%" + Timestamp + "%" + EVN.mUser.mUsername;
+                }
+
+                //formatDate(Timestamp);
+                //console.log(CurrentDate);
+                firebase.database().ref().child('APPDATA').child('Registrants').child(ID).update({
+                    Status: "BANNED",
+                    Log: Update
+                });
+            });
+            EVN.mTotalAttended--;
+            $("#totals-checked-in").html("Checked In: " + EVN.mTotalAttended);
+            Materialize.toast(pID + " was successfully banned", 4000, "toast-fix");
+            console.log("Successfully checked out " + pID);
+            location.reload();
+        });
+        $('#warning-modal-title').html('Ban Warning');
+        $("#warning-modal-span").html('ban ' + pID);
+        $('#warning-modal-confirm').html('BAN');
+        $("#warning-modal").modal('open');
+    }
+}
+
+EVN_Registrants.prototype.Unban = function (pID) {
+    var EVN = this;
+    if (EVN.mStatus[pID].Status == "BANNED") {
+        $("#warning-modal-confirm").unbind("click");
+        $("#warning-modal-confirm").one("click", function () {
+            var ID = pID;
+            var Timestamp = new Date();
+            Timestamp = Timestamp.toString();
+            Timestamp = EVN.FormatESTTimestamp(Timestamp);
+
+            var OldLog = "";
+            var Update = "";
+            firebase.database().ref().child('APPDATA').child('Registrants').child(ID).once('value').then(function (snap) {
+                if (typeof snap.val().Log != 'undefined') {
+                    OldLog = snap.val().Log;
+                    Update = OldLog + " UNBANNNED%" + Timestamp + "%" + EVN.mUser.mUsername;
+                } else {
+                    Update = "UNBANNED%" + Timestamp + "%" + EVN.mUser.mUsername;
+                }
+
+                //formatDate(Timestamp);
+                //console.log(CurrentDate);
+                firebase.database().ref().child('APPDATA').child('Registrants').child(ID).update({
+                    Status: "NOT_ATTENDED",
+                    Log: Update
+                });
+            });
+            EVN.mTotalAttended--;
+            $("#totals-checked-in").html("Checked In: " + EVN.mTotalAttended);
+            Materialize.toast(pID + " was successfully unbanned", 4000, "toast-fix");
+            console.log("Successfully checked out " + pID);
+            location.reload();
+        });
+        $('#warning-modal-title').html('Unban Warning');
+        $("#warning-modal-span").html('unban ' + pID);
+        $('#warning-modal-confirm').html('UNBAN');
+        $("#warning-modal").modal('open');
     }
 }
 
@@ -316,6 +425,8 @@ EVN_Registrants.prototype.LoadCharts = function () {
 EVN_Registrants.prototype.HandleData = function (pData) {
     var RegistrantsTable = $("#registrants-table-body");
     var TotalRegistrants = $("#total-registrants");
+    var BannedTable = $('#banned-table-body');
+    var TotalBanned = $('#total-banned');
     var SizesTable = $("#shirt-sizes-table-body");
     var DietaryTable = $("#dietary-restrictions-table-body");
     var SchoolsTable = $("#schools-table-body");
@@ -325,6 +436,7 @@ EVN_Registrants.prototype.HandleData = function (pData) {
 
     // Process Data
     var RegistrantsTableContent = [];
+    var BannedTableContent = [];
     var SizesTableContent = [];
     var DietaryTableContent = [];
     var SchoolsTableContent = [];
@@ -335,6 +447,7 @@ EVN_Registrants.prototype.HandleData = function (pData) {
     var Keys = [];
 
     this.mTotalRegistrants = 0;
+    this.mTotalBanned = 0;
 
     var ID = "";
 
@@ -357,11 +470,18 @@ EVN_Registrants.prototype.HandleData = function (pData) {
             //console.log(snap.val()[ID]);
             //console.log(snap.val().ID_16893);
             if (typeof snap.val()[ID] != 'undefined') {
-                if (snap.val()[ID].Status == "CHECKED_IN") {
-                    Status = "<a id=\"status-" + ID + "\" class=\"btn-flat checked-in disabled\">CHECKED IN</a>";
-                    EVN.mTotalAttended++;
-                } else {
-                    Status = "<a id=\"status-" + ID + "\" class=\"waves-effect waves-teal btn-flat check-in\">CHECK IN</a>";
+                // Check if a person is banned or not
+                if (snap.val()[ID].Status == "BANNED") {
+                    Status = "<a id=\"status-" + ID + "\" class=\"btn-flat banned disabled\">BANNED</a>";
+                    EVN.mTotalBanned++;
+                }
+                else {
+                    if (snap.val()[ID].Status == "CHECKED_IN") {
+                        Status = "<a id=\"status-" + ID + "\" class=\"btn-flat checked-in disabled\">CHECKED IN</a>";
+                        EVN.mTotalAttended++;
+                    } else {
+                        Status = "<a id=\"status-" + ID + "\" class=\"waves-effect waves-teal btn-flat check-in\">CHECK IN</a>";
+                    }
                 }
             } else {
                 Status = "<a id=\"status-" + ID + "\" class=\"waves-effect waves-teal btn-flat check-in\">CHECK IN</a>";
@@ -369,34 +489,38 @@ EVN_Registrants.prototype.HandleData = function (pData) {
             }
 
             // Dropdown
-            if (EVN.mUser.mType == "ADMIN") {
-                More = "<a class=\"waves-effect waves-grey btn-flat more-btn dropdown-button\" href=\'#\' data-activates=\"more-" + ID + "\"><i class=\"material-icons\">more_vert</i></a><ul id=\"more-" + ID + "\" class=\'dropdown-content\'><li><a id=\"more-profile-" + ID + "\" class=\"more-profile-btn\" href=\"#!\">Profile</a></li><li class=\"divider\"></li><li><a id=\"more-check-out-" + ID + "\" class=\"more-check-out-btn\" href=\"#!\">Check Out</a></li></ul>";
+            if (typeof snap.val()[ID] != 'undefined' && snap.val()[ID].Status == "BANNED") {
+                More = "<a class=\"waves-effect waves-grey btn-flat more-btn dropdown-button\" href=\'#\' data-activates=\"more-" + ID + "\"><i class=\"material-icons\">more_vert</i></a><ul id=\"more-" + ID + "\" class=\'dropdown-content\'><li><a id=\"more-profile-" + ID + "\" class=\"more-profile-btn\" href=\"#!\">Profile</a></li><li class=\"divider\"></li><li><a id=\"more-unban-" + ID + "\" class=\"more-unban-btn\" href=\"#!\">Unban</a></li></ul>";
             } else {
-                More = "<a class=\"waves-effect waves-grey btn-flat more-btn dropdown-button\" href=\'#\' data-activates=\"more-" + ID + "\"><i class=\"material-icons\">more_vert</i></a><ul id=\"more-" + ID + "\" class=\'dropdown-content\'><li><a id=\"more-profile-" + ID + "\" class=\"more-profile-btn\" href=\"#!\">Profile</a></li><li class=\"divider\"></li></ul>";
+                More = "<a class=\"waves-effect waves-grey btn-flat more-btn dropdown-button\" href=\'#\' data-activates=\"more-" + ID + "\"><i class=\"material-icons\">more_vert</i></a><ul id=\"more-" + ID + "\" class=\'dropdown-content\'><li><a id=\"more-profile-" + ID + "\" class=\"more-profile-btn\" href=\"#!\">Profile</a></li><li class=\"divider\"></li><li><a id=\"more-check-out-" + ID + "\" class=\"more-check-out-btn\" href=\"#!\">Check Out</a></li></ul>";
             }
 
             Entry = "<tr id=\"user_" + ID + "\"><td>" + Data.id + "</td><td>" + Data.last_name + "</td><td>" + Data.first_name + "</td><td>" + Data.email + "</td><td>" + Data.phone_number + "</td><td>" + Data.shirt_size + "</td><td>" + Data.dietary_restrictions + "</td><td>" + Data.updated_at + "</td><td class=\"status-column center\">" + Status + "</td><td>" + More + "</td></tr>";
-            RegistrantsTableContent.push(Entry);
+            if (typeof snap.val()[ID] != 'undefined' && snap.val()[ID].Status == "BANNED") {
+                BannedTableContent.push(Entry);
+            } else {
+                RegistrantsTableContent.push(Entry);
 
-            // Count Totals
-            if (!EVN.mDateRegistered[Data.updated_at]) {
-                EVN.mDateRegistered[Data.updated_at] = 0;
+                // Count Totals
+                if (!EVN.mDateRegistered[Data.updated_at]) {
+                    EVN.mDateRegistered[Data.updated_at] = 0;
+                }
+                if (!EVN.mSizes[Data.shirt_size]) {
+                    EVN.mSizes[Data.shirt_size] = 0;
+                }
+                if (!EVN.mDietary[Data.dietary_restrictions]) {
+                    EVN.mDietary[Data.dietary_restrictions] = 0;
+                }
+                if (!EVN.mSchools[Data.school.name]) {
+                    EVN.mSchools[Data.school.name] = 0;
+                }
+                EVN.mDateRegistered++;
+                EVN.mSizes[Data.shirt_size]++;
+                EVN.mDietary[Data.dietary_restrictions]++;
+                EVN.mSchools[Data.school.name]++;
+                EVN.mTotalRegistrants++;
+                //console.log(Entry);
             }
-            if (!EVN.mSizes[Data.shirt_size]) {
-                EVN.mSizes[Data.shirt_size] = 0;
-            }
-            if (!EVN.mDietary[Data.dietary_restrictions]) {
-                EVN.mDietary[Data.dietary_restrictions] = 0;
-            }
-            if (!EVN.mSchools[Data.school.name]) {
-                EVN.mSchools[Data.school.name] = 0;
-            }
-            EVN.mDateRegistered++;
-            EVN.mSizes[Data.shirt_size]++;
-            EVN.mDietary[Data.dietary_restrictions]++;
-            EVN.mSchools[Data.school.name]++;
-            EVN.mTotalRegistrants++;
-            //console.log(Entry);
         }
 
         Keys = Object.keys(EVN.mSizes);
@@ -423,6 +547,8 @@ EVN_Registrants.prototype.HandleData = function (pData) {
         // Push Content to HTML
         RegistrantsTable.html(RegistrantsTableContent);
         TotalRegistrants.html(TotalRegistrants.html() + EVN.mTotalRegistrants);
+        BannedTable.html(BannedTableContent);
+        TotalBanned.html(TotalBanned.html() + EVN.mTotalBanned);
         SizesTable.html(SizesTableContent);
         DietaryTable.html(DietaryTableContent);
         SchoolsTable.html(SchoolsTableContent);
@@ -464,6 +590,13 @@ EVN_Registrants.prototype.HandleData = function (pData) {
                 ID = ID.split('-');
                 ID = ID.pop();
                 EVN.ViewProfile(ID);
+            });
+
+            $("#more-unban-" + ID).click(function (event) {
+                ID = event.target.id;
+                ID = ID.split('-');
+                ID = ID.pop();
+                EVN.Unban(ID);
             });
         }
 

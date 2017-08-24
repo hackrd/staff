@@ -106,6 +106,22 @@ nav {
     overflow: auto;
 }
 
+#banned-list-card {
+    overflow: auto;
+}
+
+#banned-table {
+    width: 100%;
+    position: relative;
+    border-collapse: collapse;
+}
+
+#banned-table td {
+    border-collapse: collapse;
+    max-width: 200px;
+    overflow: auto;
+}
+
 #loading-bar-wrapper {
     padding: 3rem;
     position: relative;
