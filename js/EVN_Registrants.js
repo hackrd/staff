@@ -69,6 +69,7 @@ EVN_Registrants.prototype.ClearRegistrantLog = function (pID) {
         $("#totals-checked-in").html("Checked In: " + EVN.mTotalAttended);
         Materialize.toast("Successfully cleared log for " + pID, 4000, "toast-fix");
         console.log("Successfully cleared log for " + pID);
+        $('#clear-log-btn').hide();
     }
 }
 
@@ -128,7 +129,7 @@ EVN_Registrants.prototype.ViewProfile = function (pID) {
                 $('#profile-check-in-out-log-table-body').html(CheckInOutLog);
 
                 // Warning Modals
-                if (EVN.mUser.HasPermission('ClearRegistrantLog') || EVN.mUser.HasPermission('All')) {
+                if (snap.val().Status != "BANNED" && (EVN.mUser.HasPermission('ClearRegistrantLog') || EVN.mUser.HasPermission('All'))) {
                     $('#clear-log-btn').unbind('click');
                     $('#clear-log-btn').click(function () {
                         $('#warning-modal').modal('open');
@@ -141,6 +142,7 @@ EVN_Registrants.prototype.ViewProfile = function (pID) {
                     $('#warning-modal-title').html('Clear Log');
                     $("#warning-modal-span").html('clear the log for ' + pID);
                     $('#warning-modal-confirm').html('CLEAR LOG');
+                    $('#clear-log-btn').show();
                 }
                 else {
                     $('#clear-log-btn').unbind('click');
@@ -150,6 +152,7 @@ EVN_Registrants.prototype.ViewProfile = function (pID) {
             else {
                 $('#profile-check-in-out-log-table-body').html('');
                 $('#clear-log-btn').unbind('click');
+                $('#clear-log-btn').hide();
             }
 
             $('#profile-content').html(ProfileInfo)

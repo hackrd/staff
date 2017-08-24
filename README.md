@@ -2,6 +2,9 @@
 Hack River Dell Staff Access Panel
 
 Versions will be published under two names: Prototype and Release. Only published versions will be noted on this document.
+## PROTOTYPE v0.18.1
+## Bug Fixes
+- Fixed clear log when banned button glitch
 ## PROTOTYPE v0.18.0
 ### New Features
 ##### Registrants Page
