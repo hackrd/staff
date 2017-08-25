@@ -615,6 +615,9 @@ EVN_Registrants.prototype.HandleData = function (pData) {
             stopPropagation: false // Stops event propagation
         });
 
+        $('#registrants-table').tablesorter();
+        $('#banned-table').tablesorter();
+
         for (var i = 0; i < IsCreateNewFirebaseEntry.length; i++) {
             EVN.CreateFirebaseRegistrantEntry(IsCreateNewFirebaseEntry[i]);
         }
