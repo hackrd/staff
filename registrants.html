@@ -21,7 +21,7 @@ Sean Kee <skee66499@gmail.com>
 
   <!-- Scripts -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.28.15/js/jquery.tablesorter.min.js"></script> 
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.28.15/js/jquery.tablesorter.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>
 
   <!-- Favicon -->
@@ -100,7 +100,7 @@ Sean Kee <skee66499@gmail.com>
                   <th id="phone_number">Phone #</th>
                   <th id="shirt_size">Shirt Size</th>
                   <th id="dietary_restrictions">Dietary Restrictions</th>
-                  <th id="date_registered">Date Registered</th>
+                  <th id="last_updated">Last Updated</th>
                   <th id="status">Status</th>
                   <th></th>
                 </tr>
@@ -150,9 +150,11 @@ Sean Kee <skee66499@gmail.com>
     <!-- Profile Modal  -->
     <div id="profile-modal" class="modal modal-fixed-footer">
       <div class="modal-content">
-        <h4>Registrant Profile</h4>
+        <h4><span style="float: left">Registrant Profile</span><span id="profile-flags"></span></h4>
         <p id="profile-content"></p>
-        <h5>Log <a id="clear-log-btn" href="#!" class="red-btn waves-effect waves-green btn-flat right">CLEAR LOG</a><a id="ban-btn" href="#!" class="red-btn waves-effect waves-green btn-flat right" style="display: none;">BAN</a><a id="unban-btn" href="#!" class="red-btn waves-effect waves-green btn-flat right" style="display: none;">UNBAN</a></h5>
+        <h5><span style="float: left;">Log </span><a id="clear-log-btn" href="#!" style="float: right" class="red-btn waves-effect waves-green btn-flat right">CLEAR LOG</a>
+          <a
+            id="ban-btn" href="#!" class="red-btn waves-effect waves-green btn-flat right" style="display: none;">BAN</a><a id="unban-btn" href="#!" class="red-btn waves-effect waves-green btn-flat right" style="display: none;">UNBAN</a></h5>
         <table id="profile-check-in-out-log-table" class="striped responsive-table">
           <thead>
             <tr>
@@ -257,7 +259,7 @@ Sean Kee <skee66499@gmail.com>
 
         <!-- Schools Restrictions-->
         <div class="row">
-          <div id="schools" class="card col s5">
+          <div id="schools" class="card col s12">
             <div id="schools-card" class="card-content">
               <h5 class="center"> Schools </h5>
               <table id="schools-table" class="striped responsive-table">
@@ -272,85 +274,84 @@ Sean Kee <skee66499@gmail.com>
               </table>
             </div>
           </div>
-          <div class="col s1">
-          </div>
-          <div id="schools-chart" class="card col s6">
+        </div>
+        <div class="row">
+          <div id="schools-chart" class="card col s12">
             <div id="schools-chart-card" class="card-content" style="padding-left: 35px; padding-right: 35px;">
               <canvas id="schools-chart-canvas" width="100%" height="100%"></canvas>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Tools Tab -->
-    <div id="tools" class="container tools-tab" style="display: none;">
-      <div id="tools-wrapper" class="">
-        <div class="row row-no-margin">
-          <div class="col s2"></div>
-          <div id="raffle" class="anti-card col s8">
-            <h4 class="center"> Raffle </h4>
-            <div class="center">
-              <a id="raffle-create-new-button" class="waves-effect waves-light btn" onclick="Materialize.toast('Sorry, this feature is not available yet', 4000, 'toast-fix')">CREATE NEW</a>
+      <!-- Tools Tab -->
+      <div id="tools" class="container tools-tab" style="display: none;">
+        <div id="tools-wrapper" class="">
+          <div class="row row-no-margin">
+            <div class="col s2"></div>
+            <div id="raffle" class="anti-card col s8">
+              <h4 class="center"> Raffle </h4>
+              <div class="center">
+                <a id="raffle-create-new-button" class="waves-effect waves-light btn" onclick="Materialize.toast('Sorry, this feature is not available yet', 4000, 'toast-fix')">CREATE NEW</a>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="col s2"></div>
-          <div id="raffle" class="card col s8 hide">
-            <div id="raffle-card" class="card-content">
-              <h4 class="center"> Raffle
-                <div class="right">
-                  <a class="waves-effect waves-light btn" style="display: none;">CREATE NEW</a>
-                </div>
-              </h4>
-              <table id="raffle-table" class="striped responsive-table" style="display: none;">
-                <thead>
-                  <tr>
-                    <td>#</td>
-                    <td>ID</td>
-                    <td>Last</td>
-                    <td>First</td>
-                    <td></td>
-                  </tr>
-                </thead>
-                <tbody id="raffle-table-body">
-                </tbody>
-              </table>
+          <div class="row">
+            <div class="col s2"></div>
+            <div id="raffle" class="card col s8 hide">
+              <div id="raffle-card" class="card-content">
+                <h4 class="center"> Raffle
+                  <div class="right">
+                    <a class="waves-effect waves-light btn" style="display: none;">CREATE NEW</a>
+                  </div>
+                </h4>
+                <table id="raffle-table" class="striped responsive-table" style="display: none;">
+                  <thead>
+                    <tr>
+                      <td>#</td>
+                      <td>ID</td>
+                      <td>Last</td>
+                      <td>First</td>
+                      <td></td>
+                    </tr>
+                  </thead>
+                  <tbody id="raffle-table-body">
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Scripts -->
-  <script src="https://www.gstatic.com/firebasejs/4.2.0/firebase.js"></script>
-  <script src="js/EVN_AuthenticationService.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/js/materialize.min.js"></script>
-  <script src="js/EVN_User.js"></script>
-  <script src="js/EVN_Registrants.js"></script>
-  <!--<script src="js/EVN_Load.js"></script>-->
-  <script>
-    $(document).ready(function () {
-      // the "href" attribute of the modal trigger must specify the modal ID that wants to be triggered
-      $('.modal').modal();
-    });
-    var APP_ID = "";
-    var SECRET = "";
-    var EVN_Dash = new EVN_Registrants();
-    AUTH.onAuthStateChanged(firebaseUser => {
-      if (firebaseUser) {
-        firebase.database().ref().child('Keys').once('value').then(function (snap) {
-          APP_ID = snap.val().MyMLH_APP_ID;
-          SECRET = snap.val().MyMLH_SECRET;
-          EVN_Dash.Load(APP_ID, SECRET);
-        });
-      } else {
-        IsFailure();
-      }
-    })
-  </script>
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/4.2.0/firebase.js"></script>
+    <script src="js/EVN_AuthenticationService.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/js/materialize.min.js"></script>
+    <script src="js/EVN_User.js"></script>
+    <script src="js/EVN_Registrants.js"></script>
+    <!--<script src="js/EVN_Load.js"></script>-->
+    <script>
+      $(document).ready(function () {
+        // the "href" attribute of the modal trigger must specify the modal ID that wants to be triggered
+        $('.modal').modal();
+      });
+      var APP_ID = "";
+      var SECRET = "";
+      var EVN_Dash = new EVN_Registrants();
+      AUTH.onAuthStateChanged(firebaseUser => {
+        if (firebaseUser) {
+          firebase.database().ref().child('Keys').once('value').then(function (snap) {
+            APP_ID = snap.val().MyMLH_APP_ID;
+            SECRET = snap.val().MyMLH_SECRET;
+            EVN_Dash.Load(APP_ID, SECRET);
+          });
+        } else {
+          IsFailure();
+        }
+      })
+    </script>
 </body>
 
 </html>

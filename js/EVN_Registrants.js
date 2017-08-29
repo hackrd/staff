@@ -48,6 +48,12 @@ EVN_Registrants.prototype.DrawRaffle = function (pRaffleName) {
     var rand = myArray[Math.floor(Math.random() * myArray.length)];
 }
 
+EVN_Registrants.prototype.SetFlags = function (pID, pFlags) {
+    firebase.database().ref().child('APPDATA').child('Registrants').child(pID).update({
+        Flags: pFlags
+    });
+}
+
 EVN_Registrants.prototype.CreateUser = function (pUid, pUsername, pType) {
     firebase.database().ref().child('APPDATA').child('Users').child(pUid).set({
         Uid: pUid,
@@ -87,34 +93,42 @@ EVN_Registrants.prototype.ViewProfile = function (pID) {
         var CheckInOutLogData = "";
 
         firebase.database().ref().child('APPDATA').child('Registrants').child(pID).once('value').then(function (snap) {
-            ProfileInfo = "<span class='bold'>ID: </span>" + ID + "<br /><span class='bold'>Status: </span><span id='profile-status'>" + snap.val().Status + "</span><br /><span class='bold'>First Name: </span>" + Data.first_name + "<br /><span class='bold'>Last Name: </span>" + Data.last_name + "<br /><span class='bold'>DOB: </span>" + Data.date_of_birth + "<br /><span class='bold'>Gender: </span>" + Data.gender + "<br /><span class='bold'>Email: </span>" + Data.email + "<br /><span class='bold'>Phone #: </span>" + Data.phone_number + "<br /><span class='bold'>Shirt Size: </span>" + Data.shirt_size + "<br /><span class='bold'>School: </span>" + Data.school.name + "<br /><span class='bold'>Dietary Restrictions: </span>" + Data.dietary_restrictions + "<br /><span class='bold'>Special Needs: </span>" + Data.special_needs + "<br /><span class='bold'>Date Registered: </span>" + Data.updated_at;
+            ProfileInfo = "<span class='bold'>ID: </span>" + ID + "<br /><span class='bold'>Status: </span><span id='profile-status'>" + snap.val().Status + "</span><br /><span class='bold'>First Name: </span>" + Data.first_name + "<br /><span class='bold'>Last Name: </span>" + Data.last_name + "<br /><span class='bold'>DOB: </span>" + Data.date_of_birth + "<br /><span class='bold'>Gender: </span>" + Data.gender + "<br /><span class='bold'>Email: </span>" + Data.email + "<br /><span class='bold'>Phone #: </span>" + Data.phone_number + "<br /><span class='bold'>Shirt Size: </span>" + Data.shirt_size + "<br /><span class='bold'>School: </span>" + Data.school.name + "<br /><span class='bold'>Level of Study: </span>" + Data.level_of_study + "<br /><span class='bold'>Dietary Restrictions: </span>" + Data.dietary_restrictions + "<br /><span class='bold'>Special Needs: </span>" + Data.special_needs + "<br /><span class='bold'>Last Updated: </span>" + Data.updated_at;
+            
+            // Flags
+            $('#profile-flags').html('');
+            if (typeof snap.val().Flags != 'undefined') {
+                if (snap.val().Flags == 'INELIGIBLE') {
+                    $('#profile-flags').html('<div class="profile-redflag">INELIGIBLE</div>');
+                }
+            }
 
             // Ban/Unban button
- 
-                if (snap.val().Status == "BANNED" && (EVN.mUser.HasPermission('UnbanRegistrants') || EVN.mUser.HasPermission('All'))) {
-                    $('#ban-btn').hide();
-                    $('#unban-btn').show();
-                    $('#unban-btn').unbind('click');
-                    $('#unban-btn').click(function () {
-                        EVN.Unban(pID);
-                        })
+
+            if (snap.val().Status == "BANNED" && (EVN.mUser.HasPermission('UnbanRegistrants') || EVN.mUser.HasPermission('All'))) {
+                $('#ban-btn').hide();
+                $('#unban-btn').show();
+                $('#unban-btn').unbind('click');
+                $('#unban-btn').click(function () {
+                    EVN.Unban(pID);
+                })
+            }
+            else {
+                if (EVN.mUser.HasPermission('BanRegistrants') || EVN.mUser.HasPermission('All')) {
+                    $('#unban-btn').hide();
+                    $('#ban-btn').show();
+                    $('#ban-btn').unbind('click');
+                    $('#ban-btn').click(function () {
+                        EVN.Ban(pID);
+                    });
                 }
                 else {
-                    if (EVN.mUser.HasPermission('BanRegistrants') || EVN.mUser.HasPermission('All')) {
-                        $('#unban-btn').hide();
-                        $('#ban-btn').show();
-                        $('#ban-btn').unbind('click');
-                        $('#ban-btn').click(function () {
-                            EVN.Ban(pID);
-                        });
-                    }
-                    else {
-                        $('#ban-btn').unbind('click');
-                        $('#unban-btn').unbind('click');
-                        $('#ban-btn').hide();
-                        $('#unban-btn').hide();
-                    }
+                    $('#ban-btn').unbind('click');
+                    $('#unban-btn').unbind('click');
+                    $('#ban-btn').hide();
+                    $('#unban-btn').hide();
                 }
+            }
 
             if (typeof snap.val().Log != 'undefined') {
                 CheckInOutLogData = snap.val().Log;
@@ -342,9 +356,33 @@ EVN_Registrants.prototype.GenerateBarChart = function (pCTX, pLabels, pData) {
         data: {
             labels: pLabels,
             datasets: [{
-                label: 'Size',
+                label: '',
                 data: pData,
                 backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)',
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)',
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)',
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)',
                     'rgba(255, 99, 132, 0.2)',
                     'rgba(54, 162, 235, 0.2)',
                     'rgba(255, 206, 86, 0.2)',
@@ -353,6 +391,30 @@ EVN_Registrants.prototype.GenerateBarChart = function (pCTX, pLabels, pData) {
                     'rgba(255, 159, 64, 0.2)'
                 ],
                 borderColor: [
+                    'rgba(255,99,132,1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(255,99,132,1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(255,99,132,1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(255,99,132,1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
                     'rgba(255,99,132,1)',
                     'rgba(54, 162, 235, 1)',
                     'rgba(255, 206, 86, 1)',
@@ -416,10 +478,9 @@ EVN_Registrants.prototype.LoadCharts = function () {
     var DietaryCTX = document.getElementById("dietary-restrictions-chart-canvas").getContext('2d');
     this.GenerateBarChart(DietaryCTX, DietaryLabels, DietaryData);
 
-    SchoolsLabels = Object.keys(this.mDietary);
-    SchoolsLabels.shift();
+    SchoolsLabels = Object.keys(this.mSchools);
     for (var i = 0; i < SchoolsLabels.length; i++) {
-        SchoolsData[i] = this.mDietary[SchoolsLabels[i]];
+        SchoolsData[i] = this.mSchools[SchoolsLabels[i]];
     }
     var SchoolsCTX = document.getElementById("schools-chart-canvas").getContext('2d');
     this.GenerateBarChart(SchoolsCTX, SchoolsLabels, SchoolsData);
@@ -456,11 +517,14 @@ EVN_Registrants.prototype.HandleData = function (pData) {
 
     var EVN = this;
 
+    var IsEligible = true;
+
     // Status
     firebase.database().ref().child('APPDATA').child('Registrants').once('value').then(function (snap) {
         var IsCreateNewFirebaseEntry = [];
 
         for (var i = 0; i < pData.length; i++) {
+            IsEligible = true;
             Data = pData[i];
             Data.updated_at = Data.updated_at.split('T');
             Data.updated_at.pop();
@@ -468,6 +532,12 @@ EVN_Registrants.prototype.HandleData = function (pData) {
             Data.school.name = Data.school.name.toUpperCase().replace(/\s/g, "");
 
             ID = "ID_" + Data.id;
+            // Check for ineligiblity
+            if (EVN.mData[i].level_of_study != 'High School / Secondary School') {
+                IsEligible = false;
+                EVN.SetFlags(ID, 'INELIGIBLE');
+            }
+
             EVN.mMyMLHReference[ID] = i;
             //console.log(ID);
             //console.log(snap.val()[ID]);
@@ -498,7 +568,12 @@ EVN_Registrants.prototype.HandleData = function (pData) {
                 More = "<a class=\"waves-effect waves-grey btn-flat more-btn dropdown-button\" href=\'#\' data-activates=\"more-" + ID + "\"><i class=\"material-icons\">more_vert</i></a><ul id=\"more-" + ID + "\" class=\'dropdown-content\'><li><a id=\"more-profile-" + ID + "\" class=\"more-profile-btn\" href=\"#!\">Profile</a></li><li class=\"divider\"></li><li><a id=\"more-check-out-" + ID + "\" class=\"more-check-out-btn\" href=\"#!\">Check Out</a></li></ul>";
             }
 
-            Entry = "<tr id=\"user_" + ID + "\"><td>" + Data.id + "</td><td>" + Data.last_name + "</td><td>" + Data.first_name + "</td><td>" + Data.email + "</td><td>" + Data.phone_number + "</td><td>" + Data.shirt_size + "</td><td>" + Data.dietary_restrictions + "</td><td>" + Data.updated_at + "</td><td class=\"status-column center\">" + Status + "</td><td>" + More + "</td></tr>";
+            if (IsEligible) {
+                Entry = "<tr id=\"registrant_" + ID + "\"><td>" + Data.id + "</td><td>" + Data.last_name + "</td><td>" + Data.first_name + "</td><td>" + Data.email + "</td><td>" + Data.phone_number + "</td><td>" + Data.shirt_size + "</td><td>" + Data.dietary_restrictions + "</td><td>" + Data.updated_at + "</td><td class=\"status-column center\">" + Status + "</td><td>" + More + "</td></tr>";
+            }
+            else {
+                Entry = "<tr id=\"registrant_" + ID + "\" class='redflag'><td>" + Data.id + "</td><td>" + Data.last_name + "</td><td>" + Data.first_name + "</td><td>" + Data.email + "</td><td>" + Data.phone_number + "</td><td>" + Data.shirt_size + "</td><td>" + Data.dietary_restrictions + "</td><td>" + Data.updated_at + "</td><td class=\"status-column center\">" + Status + "</td><td>" + More + "</td></tr>";
+            }
             if (typeof snap.val()[ID] != 'undefined' && snap.val()[ID].Status == "BANNED") {
                 BannedTableContent.push(Entry);
             } else {

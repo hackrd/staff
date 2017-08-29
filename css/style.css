@@ -230,3 +230,24 @@ nav {
     color: white;
     background-color: #f35c5c
 }
+
+.redflag {
+    background-color: #f78888 !important;
+}
+
+#profile-content {
+    float: left;
+}
+
+#profile-flags {
+    float: left;
+}
+
+.profile-redflag {
+    background-color: #f78888 !important;
+    color: white !important;
+    padding: 0 10px 0 10px;
+    margin-left: 10px;
+    border-radius: 5px;
+    font-size: 1rem;
+}
