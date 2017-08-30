@@ -26,8 +26,8 @@ var EVN_Registrants = function () {
     this.mUser = new EVN_User();
 }
 
-EVN_Registrants.prototype.FormatESTTimestamp = function (pTimestamp) {
-    var Timestamp = pTimestamp;
+EVN_Registrants.prototype.GetESTTimestamp = function () {
+    /*var Timestamp = pTimestamp;
     Timestamp = Timestamp.split(' ');
     //console.log(Timestamp);
     Timestamp.push('EST');
@@ -37,7 +37,14 @@ EVN_Registrants.prototype.FormatESTTimestamp = function (pTimestamp) {
     TimePart = TimePart.join('-');
     Timestamp = DatePart + '@' + TimePart;
     console.log(Timestamp);
-    return Timestamp;
+    return Timestamp;*/
+    var Timestamp = new Date();
+    return (Timestamp.getMonth() + 1) + '-' + Timestamp.getDate() + '-' + Timestamp.getFullYear() + '@' + Timestamp.getHours() + ':' + Timestamp.getMinutes() + ':' + Timestamp.getSeconds() + '-EST';
+}
+
+EVN_Registrants.prototype.GetDate = function () {
+    var Timestamp = new Date();
+    return (Timestamp.getMonth() + 1) + '-' + Timestamp.getDate() + '-' + Timestamp.getFullYear();
 }
 
 EVN_Registrants.prototype.CreateRaffle = function (pRaffleName) {
@@ -90,54 +97,48 @@ EVN_Registrants.prototype.ExportRegistrants = function (pFileType) {
 
         firebase.database().ref().child('APPDATA').child('Registrants').once('value').then(function (snap) {
             // Prepare data
-            var PreparedData = [];
-            var PreparedDataCounter = 0;
+            var JSONData = [];
+            var JSONDataCounter = 0;
             for (var i = 0; i < EVN.mData.length; i++) {
                 if (typeof snap.val()['ID_' + EVN.mData[i].id] != undefined) {
                     if (snap.val()['ID_' + EVN.mData[i].id].Status != 'BANNED') {
-                        PreparedData.push($.extend(true,{},EVN.mData[i]));
-                        PreparedData[PreparedDataCounter].school_id = PreparedData[PreparedDataCounter].school.id.toString();
-                        PreparedData[PreparedDataCounter].school_name = PreparedData[PreparedDataCounter].school.name;
-                        PreparedData[PreparedDataCounter].last_updated = PreparedData[PreparedDataCounter].updated_at[0];
-                        delete PreparedData[PreparedDataCounter].school;
-                        delete PreparedData[PreparedDataCounter].scopes;
-                        delete PreparedData[PreparedDataCounter].updated_at;
-                        PreparedDataCounter++;
+                        JSONData.push($.extend(true,{},EVN.mData[i]));
+                        JSONData[JSONDataCounter].school_id = JSONData[JSONDataCounter].school.id.toString();
+                        JSONData[JSONDataCounter].school_name = JSONData[JSONDataCounter].school.name;
+                        JSONData[JSONDataCounter].last_updated = JSONData[JSONDataCounter].updated_at[0];
+                        delete JSONData[JSONDataCounter].school;
+                        delete JSONData[JSONDataCounter].scopes;
+                        delete JSONData[JSONDataCounter].updated_at;
+                        JSONDataCounter++;
                     }
                 }
             }
 
+            var Timestamp = EVN.GetDate();
+            var FileName = Timestamp + "_Hack River Dell Registrants";
+
+            var DataURI = "";
+
             // Created proper download
             if (pFileType == 'CSV') {
-
-                var jsonData = PreparedData;
-                var CSVString = EVN.JSONToCSV(jsonData);
-                var dataUri = 'data:text/csv;charset=utf-8,' + CSVString;
-
-                var exportFileDefaultName = 'data.csv';
-
-                var linkElement = document.createElement('a');
-                linkElement.setAttribute('href', dataUri);
-                linkElement.setAttribute('download', exportFileDefaultName);
-                linkElement.click();
+                FileName += ".csv";
+                var CSVString = EVN.JSONToCSV(JSONData);
+                DataURI = "data:text/csv;charset=utf-8," + CSVString;
             } else {
                 if (pFileType = 'JSON') {
-                    var jsonData = EVN.mData;
-
-                    let dataStr = JSON.stringify(jsonData);
-                    let dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-
-                    let exportFileDefaultName = 'data.json';
-
-                    let linkElement = document.createElement('a');
-                    linkElement.setAttribute('href', dataUri);
-                    linkElement.setAttribute('download', exportFileDefaultName);
-                    linkElement.click();
-
+                    FileName += ".json";
+                    var JSONString = JSON.stringify(JSONData);
+                    DataURI = "data:application/json;charset=utf-8," + encodeURIComponent(JSONString);
                 } else {
                     console.log('Invalid file type');
+                    return;
                 }
             }
+
+            var TempLinkElement = document.createElement('a');
+            TempLinkElement.setAttribute('href', DataURI);
+            TempLinkElement.setAttribute('download', FileName);
+            TempLinkElement.click();
         });
     }
 }
@@ -148,6 +149,7 @@ EVN_Registrants.prototype.SetFlags = function (pID, pFlags) {
     });
 }
 
+// Creates user account default to staff upon first login
 EVN_Registrants.prototype.CreateUser = function (pUid, pUsername, pType) {
     firebase.database().ref().child('APPDATA').child('Users').child(pUid).set({
         Uid: pUid,
@@ -274,9 +276,7 @@ EVN_Registrants.prototype.Ban = function (pID) {
             $("#warning-modal-confirm").unbind("click");
             $("#warning-modal-confirm").one("click", function () {
                 var ID = pID;
-                var Timestamp = new Date();
-                Timestamp = Timestamp.toString();
-                Timestamp = EVN.FormatESTTimestamp(Timestamp);
+                var Timestamp = EVN.GetESTTimestamp();
 
                 var OldLog = "";
                 var Update = "";
@@ -316,9 +316,7 @@ EVN_Registrants.prototype.Unban = function (pID) {
             $("#warning-modal-confirm").unbind("click");
             $("#warning-modal-confirm").one("click", function () {
                 var ID = pID;
-                var Timestamp = new Date();
-                Timestamp = Timestamp.toString();
-                Timestamp = EVN.FormatESTTimestamp(Timestamp);
+                var Timestamp = EVN.GetESTTimestamp();
 
                 var OldLog = "";
                 var Update = "";
@@ -354,9 +352,7 @@ EVN_Registrants.prototype.Unban = function (pID) {
 EVN_Registrants.prototype.CheckIn = function (pID) {
     var EVN = this;
     var ID = pID;
-    var Timestamp = new Date();
-    Timestamp = Timestamp.toString();
-    Timestamp = this.FormatESTTimestamp(Timestamp);
+    var Timestamp = this.GetESTTimestamp();
 
     var OldLog = "";
     var Update = "";
@@ -387,9 +383,7 @@ EVN_Registrants.prototype.CheckOut = function (pID) {
         $("#warning-modal-confirm").unbind("click");
         $("#warning-modal-confirm").one("click", function () {
             var ID = pID;
-            var Timestamp = new Date();
-            Timestamp = Timestamp.toString();
-            Timestamp = EVN.FormatESTTimestamp(Timestamp);
+            var Timestamp = this.GetESTTimestamp();
 
             var OldLog = "";
             var Update = "";
