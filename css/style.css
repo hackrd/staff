@@ -237,6 +237,7 @@ nav {
 
 #profile-content {
     float: left;
+    width: 100%;
 }
 
 #profile-flags {
