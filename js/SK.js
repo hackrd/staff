@@ -30,7 +30,7 @@ var SK = new SKJS();
 /* Search a table */
 SKJS.prototype.SearchTable = function (pTableID, pIndexColumns) {
     var Table = $('#' + pTableID);
-    var Input = $('#' + event.target.id).val();
+    var Input = $('#' + event.target.id).val().toLowerCase();
     var Rows = Table.find('tr');
     var Data;
 
