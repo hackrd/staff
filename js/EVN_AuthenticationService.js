@@ -9,7 +9,7 @@ Visit https://mrskee.github.io/ for more information.
 Sean Kee <skee66499@gmail.com>
 */
 
-var EVN_Version = "PROTOTYPE v0.22.1";
+var EVN_Version = "PROTOTYPE v0.22.2";
 
 class User {
     constructor() {
@@ -48,7 +48,7 @@ var AUTH = null;
     // Get element IDs
     const LoginForm = $('#LoginForm');
     const ButtonLogIn = $('#ButtonLogIn');
-    const ButtonLogOut = $('#ButtonLogOut');
+    const ButtonLogOut = $('.ButtonLogOut');
     const ButtonUpdatePassword = $('#ButtonUpdatePassword');
 
     // LogIn Event

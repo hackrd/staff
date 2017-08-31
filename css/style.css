@@ -282,3 +282,22 @@ nav {
 #total-banned {
     font-size: 2rem;
 }
+
+#slide-out {
+    width: 75%;
+}
+
+#slide-out a {
+    font-size: 3rem;
+    height: 10rem;
+    padding: 4rem;
+}
+
+.float-left {
+    float: left !important;
+}
+
+.mobile-nav-icon-text {
+    float: left;
+    margin-left: 10px;
+}

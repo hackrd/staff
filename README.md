@@ -2,6 +2,10 @@
 Hack River Dell Staff Access Panel
 
 Versions will be published under two names: Prototype and Release. Only published versions will be noted on this document.
+## PROTOTYPE v0.22.2
+### Bug Fixes
+- Mobile nav side menu fixed
+
 ## PROTOTYPE v0.22.1
 ### Changelog
 - Search is no longer cAsE-sEnSiTiVe

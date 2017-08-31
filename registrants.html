@@ -43,23 +43,23 @@ Sean Kee <skee66499@gmail.com>
     <li class="nav-dropdown-staff"><a href="#!" onclick="Materialize.toast('Sorry, this feature is not available yet', 4000, 'toast-fix')">Staff</a></li>
     <li class="nav-dropdown-settings"><a href="settings.html">Settings</a></li>
     <li class="divider"></li>
-    <li><a id="ButtonLogOut" href="index.html">Logout</a></li>
+    <li><a class="ButtonLogOut" href="index.html">Logout</a></li>
+  </ul>
+  <ul id="slide-out" class="uppecase side-nav">
+      <li class="nav-dropdown-registrants"><a href="#!">Registrants</a></li>
+      <li class="nav-dropdown-staff"><a href="staff.html" onclick="Materialize.toast('Sorry, this feature is not available yet', 4000, 'toast-fix')">Staff</a></li>
+      <li class="nav-dropdown-settings"><a href="settings.html">Settings</a></li>
+      <li class="divider"></li>
+      <li><a class="ButtonLogOut" href="index.html">Logout</a></li>
   </ul>
   <div class="navbar-fixed">
     <nav class="nav-extended">
       <div class="container">
         <div class="nav-wrapper">
           <a href="#" class="brand-logo center">Hack River Dell Access</a>
-          <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+          <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons float-left">menu</i><span class="mobile-nav-icon-text">REGISTRANTS</span></a>
           <ul id="nav-mobile" class="right hide-on-med-and-down">
             <li class="nav-dropdown-btn"><a class="uppercase dropdown-button waves-effect nav-dropdown-btn" href="#!" data-activates="nav-dropdown">Registrants<i class="material-icons right">arrow_drop_down</i></a></li>
-          </ul>
-          <ul id="mobile-demo" class="uppecase side-nav">
-            <li class="nav-dropdown-registrants"><a href="#!">Registrants</a></li>
-            <li class="nav-dropdown-staff"><a href="staff.html" onclick="Materialize.toast('Sorry, this feature is not available yet', 4000, 'toast-fix')">Staff</a></li>
-            <li class="nav-dropdown-settings"><a href="settings.html">Settings</a></li>
-            <li class="divider"></li>
-            <li><a id="ButtonLogOut" href="#!">Logout</a></li>
           </ul>
         </div>
       </div>
@@ -370,8 +370,9 @@ Sean Kee <skee66499@gmail.com>
   <!--<script src="js/EVN_Load.js"></script>-->
   <script>
     $(document).ready(function () {
-      // the "href" attribute of the modal trigger must specify the modal ID that wants to be triggered
       $('.modal').modal();
+      $(".button-collapse").sideNav();
+      $('.collapsible').collapsible();
     });
     var APP_ID = "";
     var SECRET = "";
