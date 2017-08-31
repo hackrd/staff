@@ -23,6 +23,7 @@ Sean Kee <skee66499@gmail.com>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.28.15/js/jquery.tablesorter.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>
+  <script type="text/javascript" src="js/SK.js"></script>
 
   <!-- Favicon -->
   <link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png">
@@ -86,11 +87,29 @@ Sean Kee <skee66499@gmail.com>
     <!-- Registrants Tab -->
     <div id="registrants" class="container" style="display: none;">
       <div id="registrants-wrapper" class="top-space">
+        <!-- Total Counts -->
+        <div class="row">
+          <div class="col s3"></div>
+          <div id="totals" class="anti-card col s6 center">
+            <h4 class="center"> Totals </h4>
+            <div class="card-action">
+              <h5 class="totals-registrants left"> Registrants: </h5>
+              <h5 class="totals-checked-in right"> Checked In: </h5>
+            </div>
+            <div class="card-action" style="border-top: none"></div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
         <div id="registrants-list" class="card">
           <div id="registrants-list-card" class="card-content" style="padding-left: 50px; padding-right: 50px;">
-            <h4 class="center"> Registered Hackers </h4>
-            <h5 id="total-registrants" class="center"> Total: </h5>
-            <table id="registrants-table" class="striped responsive-table">
+            <!--h4 class="center"> Registered Hackers </h4-->
+            <h4 class="center">
+              <span style="padding-top: .75rem;" class="left"><i class="material-icons">verified_user</i>   Registered Hackers</span>
+              <input id="SearchField" type="text" class="form-control right" onkeyup="SK.SearchTable('registrants-table', [0, 1, 2, 3])" placeholder="Search registrants..." required="" />
+            </h4>
+            <table id="registrants-table" class="striped">
               <thead>
                 <tr>
                   <th id="id">ID</th>
@@ -109,18 +128,19 @@ Sean Kee <skee66499@gmail.com>
               <tbody id="registrants-table-body">
               </tbody>
             </table>
-            <div class="card-action">
-              Search
-            </div>
           </div>
         </div>
       </div>
       <div id="banned-wrapper" class="top-space">
         <div id="banned-list" class="card">
           <div id="banned-list-card" class="card-content" style="padding-left: 50px; padding-right: 50px;">
-            <h4 class="center"> Banned </h4>
-            <h5 id="total-banned" class="center"> Total: </h5>
-            <table id="banned-table" class="striped responsive-table">
+            <h4 class="center">
+              <span class="left"><!--i class="material-icons">highlight_off</i-->   Banned </span>
+              <i class="material-icons small left" style="margin-top: .25rem;">keyboard_arrow_right</i>
+              <span id="total-banned" class="left"> Total: </span>
+            </h4>
+            <!--h5 id="total-banned" class="center"> Total: </h5-->
+            <table id="banned-table" class="striped ">
               <thead>
                 <tr>
                   <th id="id">ID</th>
@@ -139,9 +159,6 @@ Sean Kee <skee66499@gmail.com>
               <tbody id="banned-table-body">
               </tbody>
             </table>
-            <div class="card-action">
-              Search
-            </div>
           </div>
         </div>
       </div>
@@ -156,7 +173,7 @@ Sean Kee <skee66499@gmail.com>
           <a id="ban-btn" href="#!" class="red-btn waves-effect waves-green btn-flat right" style="display: none;">BAN</a>
           <a id="unban-btn" href="#!" class="red-btn waves-effect waves-green btn-flat right" style="display: none;">UNBAN</a>
         </h5>
-        <table id="profile-check-in-out-log-table" class="striped responsive-table">
+        <table id="profile-check-in-out-log-table" class="striped ">
           <thead>
             <tr>
               <th id="action">Action</th>
@@ -174,10 +191,10 @@ Sean Kee <skee66499@gmail.com>
       </div>
     </div>
 
-    <!-- Checkout Warning Modal -->
+    <!-- Warning Modal -->
     <div id="warning-modal" class="modal">
       <div class="modal-content">
-        <h4 id="warning-modal-title"></h4>
+        <h4><i class="material-icons small">warning</i>   <span id="warning-modal-title"></span></h4>
         <p>You are about to <span id="warning-modal-span"></span>. Continue?</p>
       </div>
       <div class="modal-footer">
@@ -195,8 +212,8 @@ Sean Kee <skee66499@gmail.com>
           <div id="totals" class="anti-card col s6 center">
             <h4 class="center"> Totals </h4>
             <div class="card-action">
-              <h5 id="totals-registrants" class="left"> Registrants: </h5>
-              <h5 id="totals-checked-in" class="right"> Checked In: </h5>
+              <h5 class="totals-registrants left"> Registrants: </h5>
+              <h5 class="totals-checked-in right"> Checked In: </h5>
             </div>
             <div class="card-action" style="border-top: none"></div>
           </div>
@@ -208,7 +225,7 @@ Sean Kee <skee66499@gmail.com>
           <div id="shirt-sizes" class="card col s4">
             <div id="shirt-sizes-card" class="card-content">
               <h5 class="center"> Shirt Sizes </h5>
-              <table id="shirt-sizes-table" class="striped responsive-table">
+              <table id="shirt-sizes-table" class="striped ">
                 <thead>
                   <tr>
                     <th id="size">Size</th>
@@ -235,7 +252,7 @@ Sean Kee <skee66499@gmail.com>
           <div id="dietary-restrictions" class="card col s4">
             <div id="dietary-restrictions-card" class="card-content">
               <h5 class="center"> Dietary Restrictions </h5>
-              <table id="dietary-restrictions-chart" class="striped responsive-table">
+              <table id="dietary-restrictions-chart" class="striped ">
                 <thead>
                   <tr>
                     <th id="type">Type</th>
@@ -263,7 +280,7 @@ Sean Kee <skee66499@gmail.com>
           <div id="schools" class="card col s12">
             <div id="schools-card" class="card-content">
               <h5 class="center"> Schools </h5>
-              <table id="schools-table" class="striped responsive-table">
+              <table id="schools-table" class="striped ">
                 <thead>
                   <tr>
                     <th id="school-name">School</th>
@@ -297,8 +314,8 @@ Sean Kee <skee66499@gmail.com>
             <h4 class="center">Export Registrants</h4>
             <p class="center" style="font-style: italic;">*Does not include banned registrants</p>
             <div class="card-action" style="border-top: none">
-                <a id="download-csv-button" class="waves-effect waves-light btn" onclick="EVN_Dash.ExportRegistrants('CSV')">CSV</a>
-                <a id="download-csv-button" class="waves-effect waves-light btn" onclick="EVN_Dash.ExportRegistrants('JSON')">JSON</a>
+                <a id="download-csv-button" class="waves-effect waves-light btn" onclick="EVN_Dash.ExportRegistrants('CSV')"><i class="material-icons" style="float: left;">file_download</i>  CSV</a>
+                <a id="download-csv-button" class="waves-effect waves-light btn" onclick="EVN_Dash.ExportRegistrants('JSON')"><i class="material-icons" style="float: left;">file_download</i>  JSON</a>
             </div>
           </div>
           </div>
@@ -311,7 +328,7 @@ Sean Kee <skee66499@gmail.com>
           <div id="raffle" class="anti-card col s8">
             <h4 class="center"> Raffle </h4>
             <div class="center">
-              <a id="raffle-create-new-button" class="waves-effect waves-light btn" onclick="Materialize.toast('Sorry, this feature is not available yet', 4000, 'toast-fix')">CREATE NEW</a>
+              <a id="raffle-create-new-button" class="waves-effect waves-light btn" onclick="Materialize.toast('Sorry, this feature is not available yet', 4000, 'toast-fix')"><i class="material-icons" style="float: left;">add</i> CREATE NEW</a>
             </div>
           </div>
         </div>
@@ -324,7 +341,7 @@ Sean Kee <skee66499@gmail.com>
                   <a class="waves-effect waves-light btn" style="display: none;">CREATE NEW</a>
                 </div>
               </h4>
-              <table id="raffle-table" class="striped responsive-table" style="display: none;">
+              <table id="raffle-table" class="striped " style="display: none;">
                 <thead>
                   <tr>
                     <td>#</td>

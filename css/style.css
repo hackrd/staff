@@ -58,6 +58,24 @@ nav {
     margin-right: 4rem;
 }
 
+@media only screen and (max-width: 1550px) {
+    .container {
+        width: 90%;
+    }
+}
+
+@media only screen and (max-width: 1150px) {
+    .container {
+        width: 95%;
+    }
+}
+
+@media only screen and (max-width: 1100px) {
+    .container {
+        width: 98%;
+    }
+}
+
 .brand-logo {
     /*font-family: 'Poppins', sans-serif;*/
 }
@@ -88,6 +106,10 @@ nav {
 
 .top-space {
     margin-top: 3rem;
+}
+
+#registrants-list {
+    margin-top: 20px;
 }
 
 #registrants-list-card {
@@ -251,4 +273,12 @@ nav {
     margin-left: 10px;
     border-radius: 5px;
     font-size: 1rem;
+}
+
+#SearchField {
+    width: 35%;
+}
+
+#total-banned {
+    font-size: 2rem;
 }

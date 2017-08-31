@@ -162,16 +162,23 @@ EVN_Registrants.prototype.CreateUser = function (pUid, pUsername, pType) {
 EVN_Registrants.prototype.ClearRegistrantLog = function (pID) {
     var EVN = this;
     if (EVN.mUser.HasPermission('ClearRegistrantLog') || EVN.mUser.HasPermission('All')) {
-        firebase.database().ref().child('APPDATA').child('Registrants').child(pID).set({
-            Status: "NOT_ATTENDED",
+        firebase.database().ref().child('APPDATA').child('Registrants').child(pID).once('value').then(function (snap) {
+            if (snap.val().Status == 'CHECKED_IN') {
+                EVN.mTotalAttended--;
+                $('.totals-checked-in').each(function () {
+                    $(this).html('Checked In: ' + EVN.mTotalAttended);
+                });
+            }
+
+            firebase.database().ref().child('APPDATA').child('Registrants').child(pID).set({
+                Status: "NOT_ATTENDED",
+            });
+            $('#profile-check-in-out-log-table-body').html('');
+            $('#profile-status').html('NOT_ATTENDED');
+            Materialize.toast("Successfully cleared log for " + pID, 4000, "toast-fix");
+            console.log("Successfully cleared log for " + pID);
+            $('#clear-log-btn').hide();
         });
-        $('#profile-check-in-out-log-table-body').html('');
-        $('#profile-status').html('NOT_ATTENDED');
-        EVN.mTotalAttended--;
-        $("#totals-checked-in").html("Checked In: " + EVN.mTotalAttended);
-        Materialize.toast("Successfully cleared log for " + pID, 4000, "toast-fix");
-        console.log("Successfully cleared log for " + pID);
-        $('#clear-log-btn').hide();
     }
 }
 
@@ -281,6 +288,13 @@ EVN_Registrants.prototype.Ban = function (pID) {
                 var OldLog = "";
                 var Update = "";
                 firebase.database().ref().child('APPDATA').child('Registrants').child(ID).once('value').then(function (snap) {
+                    if (snap.val().Status == 'CHECKED_IN') {
+                        EVN.mTotalAttended--;
+                        $('.totals-checked-in').each(function () {
+                            $(this).html('Checked In: ' + EVN.mTotalAttended);
+                        });
+                    }
+                    
                     if (typeof snap.val().Log != 'undefined') {
                         OldLog = snap.val().Log;
                         Update = OldLog + " BANNED%" + Timestamp + "%" + EVN.mUser.mUsername;
@@ -295,10 +309,8 @@ EVN_Registrants.prototype.Ban = function (pID) {
                         Log: Update
                     });
                 });
-                EVN.mTotalAttended--;
-                $("#totals-checked-in").html("Checked In: " + EVN.mTotalAttended);
                 Materialize.toast(pID + " was successfully banned", 4000, "toast-fix");
-                console.log("Successfully checked out " + pID);
+                console.log("Successfully banned " + pID);
                 location.reload();
             });
             $('#warning-modal-title').html('Ban Warning');
@@ -335,10 +347,8 @@ EVN_Registrants.prototype.Unban = function (pID) {
                         Log: Update
                     });
                 });
-                EVN.mTotalAttended--;
-                $("#totals-checked-in").html("Checked In: " + EVN.mTotalAttended);
                 Materialize.toast(pID + " was successfully unbanned", 4000, "toast-fix");
-                console.log("Successfully checked out " + pID);
+                console.log("Successfully unbanned " + pID);
                 location.reload();
             });
             $('#warning-modal-title').html('Unban Warning');
@@ -383,7 +393,7 @@ EVN_Registrants.prototype.CheckOut = function (pID) {
         $("#warning-modal-confirm").unbind("click");
         $("#warning-modal-confirm").one("click", function () {
             var ID = pID;
-            var Timestamp = this.GetESTTimestamp();
+            var Timestamp = EVN.GetESTTimestamp();
 
             var OldLog = "";
             var Update = "";
@@ -403,7 +413,9 @@ EVN_Registrants.prototype.CheckOut = function (pID) {
                 });
             });
             EVN.mTotalAttended--;
-            $("#totals-checked-in").html("Checked In: " + EVN.mTotalAttended);
+            $('.totals-checked-in').each(function () {
+                $(this).html('Checked In: ' + EVN.mTotalAttended);
+            });
             Materialize.toast(pID + " was successfully checked out", 4000, "toast-fix");
             console.log("Successfully checked out " + pID);
         });
@@ -576,15 +588,14 @@ EVN_Registrants.prototype.LoadCharts = function () {
 
 EVN_Registrants.prototype.HandleData = function (pData) {
     var RegistrantsTable = $("#registrants-table-body");
-    var TotalRegistrants = $("#total-registrants");
     var BannedTable = $('#banned-table-body');
     var TotalBanned = $('#total-banned');
     var SizesTable = $("#shirt-sizes-table-body");
     var DietaryTable = $("#dietary-restrictions-table-body");
     var SchoolsTable = $("#schools-table-body");
 
-    var TotalsRegistrants = $("#totals-registrants");
-    var TotalsCheckedIn = $("#totals-checked-in");
+    var TotalsRegistrants = $(".totals-registrants");
+    var TotalsCheckedIn = $(".totals-checked-in");
 
     // Process Data
     var RegistrantsTableContent = [];
@@ -714,7 +725,6 @@ EVN_Registrants.prototype.HandleData = function (pData) {
 
         // Push Content to HTML
         RegistrantsTable.html(RegistrantsTableContent);
-        TotalRegistrants.html(TotalRegistrants.html() + EVN.mTotalRegistrants);
         BannedTable.html(BannedTableContent);
         TotalBanned.html(TotalBanned.html() + EVN.mTotalBanned);
         SizesTable.html(SizesTableContent);
@@ -724,8 +734,12 @@ EVN_Registrants.prototype.HandleData = function (pData) {
         if (EVN.mTotalAttended == null) {
             EVN.mTotalAttended = 0;
         }
-        TotalsRegistrants.html(TotalsRegistrants.html() + EVN.mTotalRegistrants);
-        TotalsCheckedIn.html(TotalsCheckedIn.html() + EVN.mTotalAttended);
+        TotalsRegistrants.each(function() {
+            $(this).html($(this).html() + EVN.mTotalRegistrants);
+        });
+        TotalsCheckedIn.each(function() {
+            $(this).html($(this).html() + EVN.mTotalAttended);
+        });
 
         EVN.LoadCharts();
 
@@ -855,7 +869,9 @@ EVN_Registrants.prototype.LoadContent = function (pAPP_ID, pSECRET) {
                                 ButtonID.unbind("click");
 
                                 EVN.mTotalAttended++;
-                                $("#totals-checked-in").html("Checked In: " + EVN.mTotalAttended);
+                                $('.totals-checked-in').each(function () {
+                                    $(this).html('Checked In: ' + EVN.mTotalAttended);
+                                });
                                 //console.log(ID + " Successfully Checked In");
                             }
                             if (snap.val()[ID].Status == "CHECKED_OUT" || snap.val()[ID].Status == "NOT_ATTENDED") {

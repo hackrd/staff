@@ -2,6 +2,18 @@
 Hack River Dell Staff Access Panel
 
 Versions will be published under two names: Prototype and Release. Only published versions will be noted on this document.
+## PROTOTYPE v0.22.0
+### New Features
+##### Registrants Page
+- Search feature for Registered Hackers Table
+### Bug Fixes
+- Negative checkin counter upon ban
+- Unban function fixed
+### Changelog
+- 'Totals' information now visible in registrants tab
+- Mobile responsiveness improved
+- Added icons
+
 ## PROROTYPE v0.21.1
 ### Bug Fixes
 - Fixed JSON download data
