@@ -9,7 +9,7 @@ Visit https://mrskee.github.io/ for more information.
 Sean Kee <skee66499@gmail.com>
 */
 
-var EVN_Version = "PROTOTYPE v0.22.3";
+var EVN_Version = "PROTOTYPE v0.22.4";
 
 class User {
     constructor() {

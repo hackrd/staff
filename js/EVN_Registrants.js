@@ -448,6 +448,9 @@ EVN_Registrants.prototype.CreateFirebaseRegistrantEntry = function (pID) {
     EVN.mStatus[ID] = {
         "Status": "NOT_ATTENDED"
     };
+    if (EVN.mData[EVN.mMyMLHReference[pID]].level_of_study != 'High School / Secondary School') {
+        EVN.SetFlags(ID, 'INELIGIBLE');
+    }
 }
 
 EVN_Registrants.prototype.GenerateBarChart = function (pCTX, pLabels, pData) {
@@ -744,13 +747,19 @@ EVN_Registrants.prototype.HandleData = function (pData) {
         EVN.LoadCharts();
 
         EVN.mStatus = snap.val();
+        for (var i = 0; i < IsCreateNewFirebaseEntry.length; i++) {
+            EVN.CreateFirebaseRegistrantEntry(IsCreateNewFirebaseEntry[i]);
+            if (typeof EVN.mStatus['ID_' + IsCreateNewFirebaseEntry[i].id] == 'undefined') {
+                EVN.mStatus['ID_' + IsCreateNewFirebaseEntry[i].id] = {'Status':'NOT_ATTENDED'};
+            }
+        }
 
         var IDs = Object.keys(EVN.mStatus);
 
         for (var i = 0; i < IDs.length; i++) {
             ID = IDs[i];
 
-            if (snap.val()[ID].Status == "NOT_ATTENDED" || snap.val()[ID].Status == "CHECKED_OUT") {
+            if (EVN.mStatus[ID].Status == "NOT_ATTENDED" || EVN.mStatus[ID].Status == "CHECKED_OUT") {
                 $("#status-" + ID).click(function (event) {
                     ID = event.target.id;
                     ID = ID.split('-');
@@ -796,10 +805,6 @@ EVN_Registrants.prototype.HandleData = function (pData) {
 
         $('#registrants-table').tablesorter();
         $('#banned-table').tablesorter();
-
-        for (var i = 0; i < IsCreateNewFirebaseEntry.length; i++) {
-            EVN.CreateFirebaseRegistrantEntry(IsCreateNewFirebaseEntry[i]);
-        }
     });
 }
 
