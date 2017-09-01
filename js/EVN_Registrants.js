@@ -26,25 +26,31 @@ var EVN_Registrants = function () {
     this.mUser = new EVN_User();
 }
 
+EVN_Registrants.prototype.YYYYMMDDToMMDDYYYY = function (pDate) {
+    pDate = pDate.split('-');
+    var Year = pDate[0];
+    var Month = pDate[1];
+    var Day = pDate[2];
+    return Month + '-' + Day + '-' + Year;
+}
+
 EVN_Registrants.prototype.GetESTTimestamp = function () {
-    /*var Timestamp = pTimestamp;
-    Timestamp = Timestamp.split(' ');
-    //console.log(Timestamp);
-    Timestamp.push('EST');
-    var DatePart = [Timestamp[0], Timestamp[1], Timestamp[2], Timestamp[3]];
-    DatePart = DatePart.join('-');
-    var TimePart = [Timestamp[4], Timestamp[9]];
-    TimePart = TimePart.join('-');
-    Timestamp = DatePart + '@' + TimePart;
-    console.log(Timestamp);
-    return Timestamp;*/
     var Timestamp = new Date();
-    return (Timestamp.getMonth() + 1) + '-' + Timestamp.getDate() + '-' + Timestamp.getFullYear() + '@' + Timestamp.getHours() + ':' + Timestamp.getMinutes() + ':' + Timestamp.getSeconds() + '-EST';
+    var Month = ('0' + (Timestamp.getMonth() + 1)).slice(-2);
+    var Day = ('0' + Timestamp.getDate()).slice(-2);
+    var Year = Timestamp.getFullYear();
+    var Hours = ('0' + Timestamp.getHours()).slice(-2);
+    var Minutes = ('0' + Timestamp.getMinutes()).slice(-2);
+    var Seconds = ('0' + Timestamp.getSeconds()).slice(-2);
+    return Month + '-' + Day + '-' + Year + '@' + Hours + ':' + Minutes + ':' + Seconds + '-EST';
 }
 
 EVN_Registrants.prototype.GetDate = function () {
     var Timestamp = new Date();
-    return (Timestamp.getMonth() + 1) + '-' + Timestamp.getDate() + '-' + Timestamp.getFullYear();
+    var Month = ('0' + (Timestamp.getMonth() + 1)).slice(-2);
+    var Day = ('0' + Timestamp.getDate()).slice(-2);
+    var Year = Timestamp.getFullYear();
+    return Month + '-' + Day + '-' + Year;
 }
 
 EVN_Registrants.prototype.CreateRaffle = function (pRaffleName) {
@@ -105,7 +111,7 @@ EVN_Registrants.prototype.ExportRegistrants = function (pFileType) {
                         JSONData.push($.extend(true,{},EVN.mData[i]));
                         JSONData[JSONDataCounter].school_id = JSONData[JSONDataCounter].school.id.toString();
                         JSONData[JSONDataCounter].school_name = JSONData[JSONDataCounter].school.name;
-                        JSONData[JSONDataCounter].last_updated = JSONData[JSONDataCounter].updated_at[0];
+                        JSONData[JSONDataCounter].last_updated = JSONData[JSONDataCounter].updated_at;
                         delete JSONData[JSONDataCounter].school;
                         delete JSONData[JSONDataCounter].scopes;
                         delete JSONData[JSONDataCounter].updated_at;
@@ -630,8 +636,12 @@ EVN_Registrants.prototype.HandleData = function (pData) {
             Data = pData[i];
             Data.updated_at = Data.updated_at.split('T');
             Data.updated_at.pop();
+            Data.updated_at = Data.updated_at[0];
+            console.log(Data.updated_at);
+            Data.updated_at = EVN.YYYYMMDDToMMDDYYYY(Data.updated_at);
+            Data.date_of_birth = EVN.YYYYMMDDToMMDDYYYY(Data.date_of_birth);
             Data.shirt_size = Data.shirt_size.replace(/\s/g, "");
-            Data.school.name = Data.school.name.toUpperCase().replace(/\s/g, "");
+            var ComparisonSchoolName = Data.school.name.toUpperCase().replace(/\s/g, "");
 
             ID = "ID_" + Data.id;
             // Check for ineligiblity

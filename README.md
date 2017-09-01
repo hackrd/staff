@@ -2,6 +2,11 @@
 Hack River Dell Staff Access Panel
 
 Versions will be published under two names: Prototype and Release. Only published versions will be noted on this document.
+## PROTOTYPE v0.22.5
+### Changelog
+- Converted all dates to MM-DD-YYYY format
+- Reformatted all school names to standard casing/spacing
+
 ## PROTOTYPE v0.22.4
 ### Bug Fixes
 - Registrant profile on initial load fixed
