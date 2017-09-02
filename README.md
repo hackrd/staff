@@ -2,6 +2,10 @@
 Hack River Dell Staff Access Panel
 
 Versions will be published under two names: Prototype and Release. Only published versions will be noted on this document.
+## PROTOTYPE v0.22.6
+### Changelog
+- Converted all date spacers to '/' instead of '-'
+
 ## PROTOTYPE v0.22.5
 ### Changelog
 - Converted all dates to MM-DD-YYYY format

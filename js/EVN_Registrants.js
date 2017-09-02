@@ -31,7 +31,7 @@ EVN_Registrants.prototype.YYYYMMDDToMMDDYYYY = function (pDate) {
     var Year = pDate[0];
     var Month = pDate[1];
     var Day = pDate[2];
-    return Month + '-' + Day + '-' + Year;
+    return Month + '/' + Day + '/' + Year;
 }
 
 EVN_Registrants.prototype.GetESTTimestamp = function () {
@@ -42,7 +42,7 @@ EVN_Registrants.prototype.GetESTTimestamp = function () {
     var Hours = ('0' + Timestamp.getHours()).slice(-2);
     var Minutes = ('0' + Timestamp.getMinutes()).slice(-2);
     var Seconds = ('0' + Timestamp.getSeconds()).slice(-2);
-    return Month + '-' + Day + '-' + Year + '@' + Hours + ':' + Minutes + ':' + Seconds + '-EST';
+    return Month + '/' + Day + '/' + Year + '@' + Hours + ':' + Minutes + ':' + Seconds + '-EST';
 }
 
 EVN_Registrants.prototype.GetDate = function () {
@@ -50,7 +50,7 @@ EVN_Registrants.prototype.GetDate = function () {
     var Month = ('0' + (Timestamp.getMonth() + 1)).slice(-2);
     var Day = ('0' + Timestamp.getDate()).slice(-2);
     var Year = Timestamp.getFullYear();
-    return Month + '-' + Day + '-' + Year;
+    return Month + '/' + Day + '/' + Year;
 }
 
 EVN_Registrants.prototype.CreateRaffle = function (pRaffleName) {
@@ -637,7 +637,6 @@ EVN_Registrants.prototype.HandleData = function (pData) {
             Data.updated_at = Data.updated_at.split('T');
             Data.updated_at.pop();
             Data.updated_at = Data.updated_at[0];
-            console.log(Data.updated_at);
             Data.updated_at = EVN.YYYYMMDDToMMDDYYYY(Data.updated_at);
             Data.date_of_birth = EVN.YYYYMMDDToMMDDYYYY(Data.date_of_birth);
             Data.shirt_size = Data.shirt_size.replace(/\s/g, "");
