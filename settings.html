@@ -22,6 +22,7 @@ Sean Kee <skee66499@gmail.com>
     <!-- Scripts -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>
+    <script src="js/SK.js"></script>
 
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png">
@@ -89,14 +90,86 @@ Sean Kee <skee66499@gmail.com>
                 <div id="account-wrapper" class="top-space">
                     <div class="row">
                         <div class="col s2"></div>
+                        <div id="update-information" class="card col s8">
+                            <div id="update-information-card" class="card-content">
+                                <h5>Update Profile</h5>
+                                <form id="UpdateInformationForm" action="#">
+                                    <div class="row">
+                                        <div class="input-field col s5 left">
+                                            <input id="UpdateFirstNameField" type="text" class="form-control" name="first_name" required autofocus="">
+                                            <label for="UpdateFirstNameField">First Name</label>
+                                        </div>
+                                        <div class="input-field col s6 right">
+                                            <input id="UpdateLastNameField" type="text" class="form-control" name="last_name" required>
+                                            <label for="UpdateLastNameField">Last Name</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="input-field col s12">
+                                            <input id="UpdateEmailField" type="email" class="form-control" name="email" required disabled>
+                                            <label for="UpdateEmail">Email</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="input-field col s12">
+                                            <input id="UpdatePhoneNumberField" type="tel" class="form-control" name="phone_number" required>
+                                            <label for="UpdatePhoneNumberField">Cell Phone Number (No Spaces or Dashes)</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="input-field col s4">
+                                            <select id="UpdateSizeField">
+                                                      <option id="UpdateSizeEmpty" value="" disabled selected>Choose your size</option>
+                                                      <option id="UpdateSizeSmall" value="Small">Small</option>
+                                                      <option id="UpdateSizeMedium" value="Medium">Medium</option>
+                                                      <option id="UpdateSizeLarge" value="Large">Large</option>
+                                                      <option id="UpdateSizeXLarge" value="XLarge">Extra Large</option>
+                                                    </select>
+                                            <label>T-Shirt Size</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col s12">
+                                            <label>Availability<br><span class="italics">Shift times are tentative/subject to change.</span></label>
+                                            <p>
+                                                <input type="checkbox" id="UpdateShiftOne"><label for="UpdateShiftOne">Saturday Morning Shift: 7:00 AM-3:00 PM</label>
+                                            </p>
+                                            <p>
+                                                <input type="checkbox" id="UpdateShiftTwo"><label for="UpdateShiftTwo">Saturday Afternoon Shift: 3:00 PM-10:00 PM</label>
+                                            </p>
+                                            <p>
+                                                <input type="checkbox" id="UpdateShiftThree"><label for="UpdateShiftThree">Night Shift: 10:00 PM-7:00 AM</label>
+                                            </p>
+                                            <p>
+                                                <input type="checkbox" id="UpdateShiftFour"><label for="UpdateShiftFour">Sunday Shift: 7:00 AM-4:00 PM</label>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="input-field col s12">
+                                            <input id="UpdateDiscordAccountField" type="text" class="form-control\" name="discord_account" required>
+                                            <label for="UpdateDiscordAccountField">Discord Account</label>
+                                        </div>
+                                    </div>
+                                    <button id="ButtonUpdateInformation" class="bottom-space waves-effect waves-light btn right" type="button">UPDATE</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s2"></div>
                         <div id="update-password" class="card col s8">
                             <div id="update-password-card" class="card-content">
                                 <h5>Update Password</h5>
                                 <form id="UpdatePasswordForm" class="form-signin" method="post">
-                                    <input id="NewPasswordField" type="password" class="form-control" name="password" placeholder="New Password" required=""
-                                        autofocus="" />
-                                    <input id="ConfirmNewPasswordField" type="password" class="form-control" name="password" placeholder="Confirm Password" required=""
-                                    />
+                                    <div class="input-field">
+                                        <input id="NewPasswordField" type="password" class="form-control" name="password" required>
+                                        <label for="NewPasswordField" data-error="wrong" data-success="right">New Password</label>
+                                    </div>
+                                    <div class="input-field">
+                                        <input id="ConfirmNewPasswordField" type="password" class="form-control" name="confirm_password" required>
+                                        <label for="ConfirmNewPasswordField" data-error="wrong" data-success="right">Confirm Password</label>
+                                    </div>
                                     <button id="ButtonUpdatePassword" class="waves-effect waves-light btn right" type="button">CHANGE PASSWORD</button>
                                 </form>
                             </div>
@@ -185,6 +258,93 @@ Sean Kee <skee66499@gmail.com>
                 </div>
             </div>
         </div>
+
+        <!-- First Login Modal  -->
+        <div id="first-login-modal" class="modal modal-fixed-footer">
+            <div class="modal-content">
+                <h4>First time logging in?</h4>
+                <h5>Glad you could be part of our team! Please take some time to fill out your information.</h5>
+                <p class="italics">You can always change this later in your account settings.</p>
+                <div id="first-login-content">
+                    <form id="FirstLoginForm" action="#">
+                        <div class="row">
+                            <div class="input-field col s5 left">
+                                <input id="FirstNameField" type="text" class="form-control" name="first_name" required autofocus="">
+                                <label for="FirstNameField">First Name</label>
+                            </div>
+                            <div class="input-field col s6 right">
+                                <input id="LastNameField" type="text" class="form-control" name="last_name" required>
+                                <label for="LastNameField">Last Name</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input id="EmailField" type="email" class="form-control" name="email" required disabled>
+                                <label for="Email">Email</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input id="PhoneNumberField" type="tel" class="form-control" name="phone_number" required>
+                                <label for="PhoneNumberField">Cell Phone Number (No Spaces or Dashes)</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s4">
+                                <select id="SizeField">
+                        <option value="" disabled selected>Choose your size</option>
+                        <option value="Small">Small</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Large">Large</option>
+                        <option value="Extra Large">Extra Large</option>
+                      </select>
+                                <label>T-Shirt Size</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s12">
+                                <label>What shift(s) can you work?<br><span class="italics">Please select all shifts you can work. Shift times are tentative/subject to change.</span></label>
+                                <p>
+                                    <input type="checkbox" id="ShiftOne"><label for="ShiftOne">Saturday Morning Shift: 7:00 AM-3:00 PM</label>
+                                </p>
+                                <p>
+                                    <input type="checkbox" id="ShiftTwo"><label for="ShiftTwo">Saturday Afternoon Shift: 3:00 PM-10:00 PM</label>
+                                </p>
+                                <p>
+                                    <input type="checkbox" id="ShiftThree"><label for="ShiftThree">Night Shift: 10:00 PM-7:00 AM</label>
+                                </p>
+                                <p>
+                                    <input type="checkbox" id="ShiftFour"><label for="ShiftFour">Sunday Shift: 7:00 AM-4:00 PM</label>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input id="DiscordAccountField" type="text" class="form-control\" name="discord_account" required>
+                                <label for="DiscordAccountField">Discord Account</label>
+                                <p class="italics">We use Discord to communicate because it's good. If you have a Discord, drop your tag (example:
+                                    @DiscordName#1234) above. If you don't have one, sign up at <a href="https://www.google.com/url?q=http://discordapp.com&sa=D&ust=1504364136485000&usg=AFQjCNFBV7Oc3sjAgpJZCYiP7TkctBDjQA">discordapp.com</a>,
+                                    and then put your Discord tag below. It is imperative that you include your ENTIRE tag.</p>
+                            </div>
+                        </div>
+                        <!--div class="divider"></div>
+                  <div class="row top-space">
+                    <div class="input-field col s5 left">
+                      <input id="NewPasswordField" type="password" class="form-control" name="password" placeholder="New Password" required>
+                      <label for="NewPasswordField">New Password</label>
+                    </div>
+                    <div class="input-field col s6 right">
+                      <input id="ConfirmNewPasswordField" type="password" class="form-control" name="password" placeholder="Confirm Password" required>
+                      <label for="ConfirmNewPassword">Confirm Password</label>
+                    </div>
+                  </div-->
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action waves-effect waves-green btn-flat" id="first-login-submit">Complete</a>
+            </div>
+        </div>
     </main>
 
     <!-- Scripts -->
@@ -204,9 +364,9 @@ Sean Kee <skee66499@gmail.com>
                 draggable: true, // Choose whether you can drag to open on touch screens,
                 onOpen: function (el) { /* Do Stuff */ }, // A function to be called when sideNav is opened
                 onClose: function (el) { /* Do Stuff */ }, // A function to be called when sideNav is closed
-            }
-            );
+            });
             $('.collapsible').collapsible();
+            $('select').material_select();
         });
         var APP_ID = "";
         var SECRET = "";

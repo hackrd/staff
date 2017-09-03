@@ -9,7 +9,7 @@ Visit https://mrskee.github.io/ for more information.
 Sean Kee <skee66499@gmail.com>
 */
 
-var EVN_Version = "PROTOTYPE v0.22.6";
+var EVN_Version = "PROTOTYPE v0.23.0";
 
 class User {
     constructor() {
@@ -49,7 +49,6 @@ var AUTH = null;
     const LoginForm = $('#LoginForm');
     const ButtonLogIn = $('#ButtonLogIn');
     const ButtonLogOut = $('.ButtonLogOut');
-    const ButtonUpdatePassword = $('#ButtonUpdatePassword');
 
     // LogIn Event
     ButtonLogIn.click(function (e) {
@@ -67,10 +66,6 @@ var AUTH = null;
     // LogOut Event
     ButtonLogOut.click(function (e) {
         LogOutUser(e);
-    });
-
-    ButtonUpdatePassword.click(function (e) {
-        UserUpdatePassword(e);
     });
 
     // Listener
@@ -120,7 +115,9 @@ function LogOutUser(pError) {
 }
 
 function UserUpdatePassword(pError) {
-    const UpdatePasswordForm = $('#UpdatePasswordForm')
+    var USER = this;
+
+    const UpdatePasswordForm = $('#UpdatePasswordForm');
     const NewPasswordInput = $('#NewPasswordField');
     const ConfirmNewPasswordInput = $('#ConfirmNewPasswordField');
     
@@ -132,7 +129,13 @@ function UserUpdatePassword(pError) {
             AUTH.currentUser.updatePassword(NewPasswordInput.val()).then(function () {
                 Materialize.toast("Password change successful", 4000, "toast-fix");
                 UpdatePasswordForm[0].reset();
-            }).catch(pError => console.log(pError.message));
+            }).catch(function (pError) {
+                console.log(pError.message);
+                if (pError.code == 'auth/requires-recent-login') {
+                    Materialize.toast("Error! Please log back in and try again", 4000, "toast-fix");
+                }
+            });
+            return true;
         }
     }
     else {

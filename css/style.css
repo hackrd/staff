@@ -107,6 +107,9 @@ nav {
 .top-space {
     margin-top: 3rem;
 }
+.bottom-space {
+    margin-bottom: 3rem;
+}
 
 #registrants-list {
     margin-top: 20px;
@@ -296,4 +299,8 @@ nav {
 .mobile-nav-icon-text {
     float: left;
     margin-left: 10px;
+}
+
+.italics {
+    font-style: italic;
 }

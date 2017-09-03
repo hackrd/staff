@@ -11,43 +11,8 @@ Sean Kee <skee66499@gmail.com>
 
 /* Dashboard using MyMLH API */
 var EVN_Settings = function () {
-    this.mData = {};
-    this.mStatus = {};
-    this.mSizes = {};
-    this.mDietary = {};
-    this.mSchools = {};
-    this.mDateRegistered = {};
-
-    this.mTotalRegistrants = null;
-    this.mTotalAttended = null;
-
-    this.mUserType = "NULL";
-    this.mUserPermissions = "NULL";
-    this.mUid = "NULL";
-
     this.mUser = new EVN_User();
-}
-
-EVN_Settings.prototype.FormatESTTimestamp = function (pTimestamp) {
-    var Timestamp = pTimestamp;
-    Timestamp = Timestamp.split(' ');
-    //console.log(Timestamp);
-    Timestamp.pop();
-    Timestamp.pop();
-    Timestamp.pop();
-    Timestamp.pop();
-    Timestamp.push('EST');
-    Timestamp = Timestamp.join('-');
-    return Timestamp;
-}
-
-EVN_Settings.prototype.CreateUser = function (pUid, pUsername, pType) {
-    firebase.database().ref().child('APPDATA').child('Users').child(pUid).set({
-        Uid: pUid,
-        Username: pUsername,
-        Type: pType
-    });
-    this.mUserType = pType;
+    this.mUid
 }
 
 EVN_Settings.prototype.ClearAllRegistrantsLog = function () {
@@ -70,8 +35,53 @@ EVN_Settings.prototype.ClearAllRegistrantsLog = function () {
     }
 }
 
-EVN_Settings.prototype.HandleData = function (pData) {
+EVN_Settings.prototype.LoadAccountTab = function () {
+    var EVN = this;
+    $('#UpdateFirstNameField').val(EVN.mUser.mFirstName);
+    $('#UpdateLastNameField').val(EVN.mUser.mLastName);
+    $('#UpdateEmailField').val(EVN.mUser.mEmail);
+    $('#UpdatePhoneNumberField').val(EVN.mUser.mPhoneNumber);
+    $('#UpdateSizeEmpty').attr('selected', false);
+    $('#UpdateSize' + EVN.mUser.mSize).attr('selected', true);
+    $('select').material_select();
+    for (var i = 0; i < EVN.mUser.mAvailability.length; i++) {
+        if (EVN.mUser.mAvailability[i] == '1') {
+            $('#UpdateShiftOne').prop('checked', true);
+        }
+        if (EVN.mUser.mAvailability[i] == '2') {
+            $('#UpdateShiftTwo').prop('checked', true);
+        }
+        if (EVN.mUser.mAvailability[i] == '3') {
+            $('#UpdateShiftThree').prop('checked', true);
+        }
+        if (EVN.mUser.mAvailability[i] == '4') {
+            $('#UpdateShiftFour').prop('checked', true);
+        }
+    }
+    $('#UpdateDiscordAccountField').val(EVN.mUser.mDiscordAccount);
+    Materialize.updateTextFields();
 
+    $('#ButtonUpdateInformation').click(function (e) {
+        EVN.mUser.UpdateUserInformation();
+    });
+
+    $('#UpdateInformationForm').keypress(function (e) {
+        if (e.which == 13) {
+            EVN.mUser.UpdateUserInformation();
+            return false;
+        }
+    });
+
+    $('#ButtonUpdatePassword').click(function (e) {
+        UserUpdatePassword(e);
+    });
+
+    $('#UpdatePasswordForm').keypress(function (e) {
+        if (e.which == 13) {
+            UserUpdatePassword(e);
+            return false;
+        }
+    });
 }
 
 EVN_Settings.prototype.LoadContent = function () {
@@ -85,13 +95,8 @@ EVN_Settings.prototype.LoadContent = function () {
     else {
         $('.nav-dropdown-staff').remove();
     }
-
-    $('#UpdatePasswordForm').keypress(function (e) {
-        if (e.which == 13) {
-            UserUpdatePassword(e);
-            return false;
-        }
-    });
+    
+    EVN.LoadAccountTab();
 
     if (EVN.mUser.HasPermission('ClearAllRegistrantsLog') || EVN.mUser.HasPermission('All')) {
         $('.manage-tab').removeClass('disabled');
@@ -128,14 +133,7 @@ EVN_Settings.prototype.Load = function () {
 
     var EVN = this;
 
-    // Check user account type
-    var EVN = this;
-    var User = firebase.auth().currentUser;
-    EVN.Uid = User.uid;
-    var Username = User.email;
-    Username = Username.split('.');
-    Username = Username.join('');
-    EVN.mUser.Load(EVN.Uid, function () {
+    EVN.mUser.Load(function () {
         EVN.LoadContent();
     });
 

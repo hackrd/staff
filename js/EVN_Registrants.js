@@ -26,33 +26,6 @@ var EVN_Registrants = function () {
     this.mUser = new EVN_User();
 }
 
-EVN_Registrants.prototype.YYYYMMDDToMMDDYYYY = function (pDate) {
-    pDate = pDate.split('-');
-    var Year = pDate[0];
-    var Month = pDate[1];
-    var Day = pDate[2];
-    return Month + '/' + Day + '/' + Year;
-}
-
-EVN_Registrants.prototype.GetESTTimestamp = function () {
-    var Timestamp = new Date();
-    var Month = ('0' + (Timestamp.getMonth() + 1)).slice(-2);
-    var Day = ('0' + Timestamp.getDate()).slice(-2);
-    var Year = Timestamp.getFullYear();
-    var Hours = ('0' + Timestamp.getHours()).slice(-2);
-    var Minutes = ('0' + Timestamp.getMinutes()).slice(-2);
-    var Seconds = ('0' + Timestamp.getSeconds()).slice(-2);
-    return Month + '/' + Day + '/' + Year + '@' + Hours + ':' + Minutes + ':' + Seconds + '-EST';
-}
-
-EVN_Registrants.prototype.GetDate = function () {
-    var Timestamp = new Date();
-    var Month = ('0' + (Timestamp.getMonth() + 1)).slice(-2);
-    var Day = ('0' + Timestamp.getDate()).slice(-2);
-    var Year = Timestamp.getFullYear();
-    return Month + '/' + Day + '/' + Year;
-}
-
 EVN_Registrants.prototype.CreateRaffle = function (pRaffleName) {
 
 }
@@ -120,7 +93,7 @@ EVN_Registrants.prototype.ExportRegistrants = function (pFileType) {
                 }
             }
 
-            var Timestamp = EVN.GetDate();
+            var Timestamp = SK.GetDate();
             var FileName = Timestamp + "_Hack River Dell Registrants";
 
             var DataURI = "";
@@ -289,7 +262,7 @@ EVN_Registrants.prototype.Ban = function (pID) {
             $("#warning-modal-confirm").unbind("click");
             $("#warning-modal-confirm").one("click", function () {
                 var ID = pID;
-                var Timestamp = EVN.GetESTTimestamp();
+                var Timestamp = SK.GetESTTimestamp();
 
                 var OldLog = "";
                 var Update = "";
@@ -334,7 +307,7 @@ EVN_Registrants.prototype.Unban = function (pID) {
             $("#warning-modal-confirm").unbind("click");
             $("#warning-modal-confirm").one("click", function () {
                 var ID = pID;
-                var Timestamp = EVN.GetESTTimestamp();
+                var Timestamp = SK.GetESTTimestamp();
 
                 var OldLog = "";
                 var Update = "";
@@ -399,7 +372,7 @@ EVN_Registrants.prototype.CheckOut = function (pID) {
         $("#warning-modal-confirm").unbind("click");
         $("#warning-modal-confirm").one("click", function () {
             var ID = pID;
-            var Timestamp = EVN.GetESTTimestamp();
+            var Timestamp = SK.GetESTTimestamp();
 
             var OldLog = "";
             var Update = "";
@@ -637,8 +610,8 @@ EVN_Registrants.prototype.HandleData = function (pData) {
             Data.updated_at = Data.updated_at.split('T');
             Data.updated_at.pop();
             Data.updated_at = Data.updated_at[0];
-            Data.updated_at = EVN.YYYYMMDDToMMDDYYYY(Data.updated_at);
-            Data.date_of_birth = EVN.YYYYMMDDToMMDDYYYY(Data.date_of_birth);
+            Data.updated_at = SK.YYYYMMDDToMMDDYYYY(Data.updated_at);
+            Data.date_of_birth = SK.YYYYMMDDToMMDDYYYY(Data.date_of_birth);
             Data.shirt_size = Data.shirt_size.replace(/\s/g, "");
             var ComparisonSchoolName = Data.school.name.toUpperCase().replace(/\s/g, "");
 
@@ -919,12 +892,7 @@ EVN_Registrants.prototype.Load = function (pAPP_ID, pSECRET) {
 
     // Check user account type
     var EVN = this;
-    var User = firebase.auth().currentUser;
-    EVN.Uid = User.uid;
-    var Username = User.email;
-    Username = Username.split('.');
-    Username = Username.join('');
-    EVN.mUser.Load(EVN.Uid, function () {
+    EVN.mUser.Load(function () {
         EVN.LoadContent(pAPP_ID, pSECRET);
     });
 }

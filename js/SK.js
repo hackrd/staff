@@ -58,3 +58,30 @@ SKJS.prototype.SearchTable = function (pTableID, pIndexColumns) {
         //}
     }
 }
+
+SKJS.prototype.GetESTTimestamp = function () {
+    var Timestamp = new Date();
+    var Month = ('0' + (Timestamp.getMonth() + 1)).slice(-2);
+    var Day = ('0' + Timestamp.getDate()).slice(-2);
+    var Year = Timestamp.getFullYear();
+    var Hours = ('0' + Timestamp.getHours()).slice(-2);
+    var Minutes = ('0' + Timestamp.getMinutes()).slice(-2);
+    var Seconds = ('0' + Timestamp.getSeconds()).slice(-2);
+    return Month + '/' + Day + '/' + Year + '@' + Hours + ':' + Minutes + ':' + Seconds + '-EST';
+}
+
+SKJS.prototype.GetDate = function () {
+    var Timestamp = new Date();
+    var Month = ('0' + (Timestamp.getMonth() + 1)).slice(-2);
+    var Day = ('0' + Timestamp.getDate()).slice(-2);
+    var Year = Timestamp.getFullYear();
+    return Month + '/' + Day + '/' + Year;
+}
+
+SKJS.prototype.YYYYMMDDToMMDDYYYY = function (pDate) {
+    pDate = pDate.split('-');
+    var Year = pDate[0];
+    var Month = pDate[1];
+    var Day = pDate[2];
+    return Month + '/' + Day + '/' + Year;
+}
