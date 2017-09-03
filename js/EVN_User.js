@@ -23,6 +23,7 @@ var EVN_User = function () {
     this.mAvailability = "";
     this.mDiscordAccount = "";
     this.mPermissions = {};
+    this.mActionLog = "";
 }
 
 EVN_User.prototype.GetUsername = function () {
@@ -109,6 +110,22 @@ EVN_User.prototype.UpdateFirebaseEntry = function (pData, pCallback) {
     USER.mDiscordAccount = pData.DiscordAccount;
 
     pCallback();
+}
+
+EVN_User.prototype.AppendActionLog = function (pEntry) {
+    var USER = this;
+    firebase.database().ref().child('APPDATA').child('Users').child(USER.mUid).once('value').then(function (snap) {
+        var Log = "";
+        if (typeof snap.val().ActionLog != 'undefined') {
+            Log = snap.val().ActionLog + ' ' + pEntry;
+        }
+        else {
+            Log = pEntry;
+        }
+        firebase.database().ref().child('APPDATA').child('Users').child(USER.mUid).update({
+            ActionLog: Log
+        });
+    });
 }
 
 EVN_User.prototype.UpdateLastSeen = function () {

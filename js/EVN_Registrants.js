@@ -266,6 +266,7 @@ EVN_Registrants.prototype.Ban = function (pID) {
 
                 var OldLog = "";
                 var Update = "";
+                var ActionLog = "";
                 firebase.database().ref().child('APPDATA').child('Registrants').child(ID).once('value').then(function (snap) {
                     if (snap.val().Status == 'CHECKED_IN') {
                         EVN.mTotalAttended--;
@@ -276,11 +277,14 @@ EVN_Registrants.prototype.Ban = function (pID) {
                     
                     if (typeof snap.val().Log != 'undefined') {
                         OldLog = snap.val().Log;
-                        Update = OldLog + " BANNED%" + Timestamp + "%" + EVN.mUser.mUsername;
+                        Update = OldLog + " " + "BANNED%" + Timestamp + "%" + EVN.mUser.mUsername;
                     } else {
                         Update = "BANNED%" + Timestamp + "%" + EVN.mUser.mUsername;
                     }
 
+                    ActionLog = "BANNED%" + pID + "%" + Timestamp;
+                    EVN.mUser.AppendActionLog(ActionLog);
+                    
                     //formatDate(Timestamp);
                     //console.log(CurrentDate);
                     firebase.database().ref().child('APPDATA').child('Registrants').child(ID).update({
@@ -311,6 +315,7 @@ EVN_Registrants.prototype.Unban = function (pID) {
 
                 var OldLog = "";
                 var Update = "";
+                var ActionLog = "";
                 firebase.database().ref().child('APPDATA').child('Registrants').child(ID).once('value').then(function (snap) {
                     if (typeof snap.val().Log != 'undefined') {
                         OldLog = snap.val().Log;
@@ -318,6 +323,9 @@ EVN_Registrants.prototype.Unban = function (pID) {
                     } else {
                         Update = "UNBANNED%" + Timestamp + "%" + EVN.mUser.mUsername;
                     }
+
+                    ActionLog = "UNBANNED%" + pID + "%" + Timestamp;
+                    EVN.mUser.AppendActionLog(ActionLog);
 
                     //formatDate(Timestamp);
                     //console.log(CurrentDate);
@@ -341,10 +349,11 @@ EVN_Registrants.prototype.Unban = function (pID) {
 EVN_Registrants.prototype.CheckIn = function (pID) {
     var EVN = this;
     var ID = pID;
-    var Timestamp = this.GetESTTimestamp();
+    var Timestamp = SK.GetESTTimestamp();
 
     var OldLog = "";
     var Update = "";
+    var ActionLog = "";
     firebase.database().ref().child('APPDATA').child('Registrants').child(pID).once('value').then(function (snap) {
         if (typeof snap.val().Log != 'undefined') {
             OldLog = snap.val().Log;
@@ -352,6 +361,9 @@ EVN_Registrants.prototype.CheckIn = function (pID) {
         } else {
             Update = "CHECKIN%" + Timestamp + "%" + EVN.mUser.mUsername;
         }
+
+        ActionLog = "CHECKIN%" + pID + "%" + Timestamp;
+        EVN.mUser.AppendActionLog(ActionLog);
 
         //formatDate(Timestamp);
         //console.log(CurrentDate);
@@ -376,6 +388,7 @@ EVN_Registrants.prototype.CheckOut = function (pID) {
 
             var OldLog = "";
             var Update = "";
+            var ActionLog = "";
             firebase.database().ref().child('APPDATA').child('Registrants').child(ID).once('value').then(function (snap) {
                 if (typeof snap.val().Log != 'undefined') {
                     OldLog = snap.val().Log;
@@ -383,6 +396,9 @@ EVN_Registrants.prototype.CheckOut = function (pID) {
                 } else {
                     Update = "CHECKOUT%" + Timestamp + "%" + EVN.mUser.mUsername;
                 }
+
+                ActionLog = "CHECKOUT%" + pID + "%" + Timestamp;
+                EVN.mUser.AppendActionLog(ActionLog);              
 
                 //formatDate(Timestamp);
                 //console.log(CurrentDate);
