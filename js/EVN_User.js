@@ -79,6 +79,7 @@ EVN_User.prototype.CreateFirebaseEntry = function (pData, pCallback) {
     USER.mAvailability = USER.mAvailability.split('%');
     USER.mAvailability.pop();
     USER.mDiscordAccount = pData.DiscordAccount;
+    USER.mActionLog = "";
 
     firebase.database().ref().child('Permissions').once('value').then(function (snap) {
         USER.mPermissions = snap.val()[USER.mType];
@@ -313,6 +314,12 @@ EVN_User.prototype.Load = function (pCallback) {
             USER.mAvailability = USER.mAvailability.split('%');
             USER.mAvailability.pop();
             USER.mDiscordAccount = UserData.DiscordAccount;
+            if (typeof UserData.ActionLog != 'undefined') {
+                USER.mActionLog = UserData.ActionLog;
+            }
+            else {
+                User.mActionLog = "";
+            }
             // Load permissions
             firebase.database().ref().child('Permissions').once('value').then(function (snap) {
                 // Load predefined permissions
