@@ -349,80 +349,80 @@ EVN_Registrants.prototype.Unban = function (pID) {
 EVN_Registrants.prototype.CheckIn = function (pID) {
     var EVN = this;
     if (EVN.mUser.HasPermission('CheckInRegistrants') || EVN.mUser.HasPermission('All')) {
-    var ID = pID;
-    var Timestamp = SK.GetESTTimestamp();
+        var ID = pID;
+        var Timestamp = SK.GetESTTimestamp();
 
-    var OldLog = "";
-    var Update = "";
-    var ActionLog = "";
-    firebase.database().ref().child('APPDATA').child('Registrants').child(pID).once('value').then(function (snap) {
-        if (typeof snap.val().Log != 'undefined') {
-            OldLog = snap.val().Log;
-            Update = OldLog + " CHECKIN%" + Timestamp + "%" + EVN.mUser.mUsername;
-        } else {
-            Update = "CHECKIN%" + Timestamp + "%" + EVN.mUser.mUsername;
-        }
+        var OldLog = "";
+        var Update = "";
+        var ActionLog = "";
+        firebase.database().ref().child('APPDATA').child('Registrants').child(pID).once('value').then(function (snap) {
+            if (typeof snap.val().Log != 'undefined') {
+                OldLog = snap.val().Log;
+                Update = OldLog + " CHECKIN%" + Timestamp + "%" + EVN.mUser.mUsername;
+            } else {
+                Update = "CHECKIN%" + Timestamp + "%" + EVN.mUser.mUsername;
+            }
 
-        ActionLog = "CHECKIN%" + pID + "%" + Timestamp;
-        EVN.mUser.AppendActionLog(ActionLog);
+            ActionLog = "CHECKIN%" + pID + "%" + Timestamp;
+            EVN.mUser.AppendActionLog(ActionLog);
 
-        //formatDate(Timestamp);
-        //console.log(CurrentDate);
-        firebase.database().ref().child('APPDATA').child('Registrants').child(ID).update({
-            Status: "CHECKED_IN",
-            Log: Update
+            //formatDate(Timestamp);
+            //console.log(CurrentDate);
+            firebase.database().ref().child('APPDATA').child('Registrants').child(ID).update({
+                Status: "CHECKED_IN",
+                Log: Update
+            });
         });
-    });
 
 
-    // Materialize.toast(message, displayLength, className, completeCallback);
-    Materialize.toast(ID + " was successfully checked in", 4000, "toast-fix");
+        // Materialize.toast(message, displayLength, className, completeCallback);
+        Materialize.toast(ID + " was successfully checked in", 4000, "toast-fix");
     }
 }
 
 EVN_Registrants.prototype.CheckOut = function (pID) {
     var EVN = this;
     if (EVN.mUser.HasPermission('CheckOutRegistrants') || EVN.mUser.HasPermission('All')) {
-    if (EVN.mStatus[pID].Status == "CHECKED_IN") {
-        $("#warning-modal-confirm").unbind("click");
-        $("#warning-modal-confirm").one("click", function () {
-            var ID = pID;
-            var Timestamp = SK.GetESTTimestamp();
+        if (EVN.mStatus[pID].Status == "CHECKED_IN") {
+            $("#warning-modal-confirm").unbind("click");
+            $("#warning-modal-confirm").one("click", function () {
+                var ID = pID;
+                var Timestamp = SK.GetESTTimestamp();
 
-            var OldLog = "";
-            var Update = "";
-            var ActionLog = "";
-            firebase.database().ref().child('APPDATA').child('Registrants').child(ID).once('value').then(function (snap) {
-                if (typeof snap.val().Log != 'undefined') {
-                    OldLog = snap.val().Log;
-                    Update = OldLog + " CHECKOUT%" + Timestamp + "%" + EVN.mUser.mUsername;
-                } else {
-                    Update = "CHECKOUT%" + Timestamp + "%" + EVN.mUser.mUsername;
-                }
+                var OldLog = "";
+                var Update = "";
+                var ActionLog = "";
+                firebase.database().ref().child('APPDATA').child('Registrants').child(ID).once('value').then(function (snap) {
+                    if (typeof snap.val().Log != 'undefined') {
+                        OldLog = snap.val().Log;
+                        Update = OldLog + " CHECKOUT%" + Timestamp + "%" + EVN.mUser.mUsername;
+                    } else {
+                        Update = "CHECKOUT%" + Timestamp + "%" + EVN.mUser.mUsername;
+                    }
 
-                ActionLog = "CHECKOUT%" + pID + "%" + Timestamp;
-                EVN.mUser.AppendActionLog(ActionLog);
+                    ActionLog = "CHECKOUT%" + pID + "%" + Timestamp;
+                    EVN.mUser.AppendActionLog(ActionLog);
 
-                //formatDate(Timestamp);
-                //console.log(CurrentDate);
-                firebase.database().ref().child('APPDATA').child('Registrants').child(ID).update({
-                    Status: "CHECKED_OUT",
-                    Log: Update
+                    //formatDate(Timestamp);
+                    //console.log(CurrentDate);
+                    firebase.database().ref().child('APPDATA').child('Registrants').child(ID).update({
+                        Status: "CHECKED_OUT",
+                        Log: Update
+                    });
                 });
+                EVN.mTotalAttended--;
+                $('.totals-checked-in').each(function () {
+                    $(this).html('Checked In: ' + EVN.mTotalAttended);
+                });
+                Materialize.toast(pID + " was successfully checked out", 4000, "toast-fix");
+                console.log("Successfully checked out " + pID);
             });
-            EVN.mTotalAttended--;
-            $('.totals-checked-in').each(function () {
-                $(this).html('Checked In: ' + EVN.mTotalAttended);
-            });
-            Materialize.toast(pID + " was successfully checked out", 4000, "toast-fix");
-            console.log("Successfully checked out " + pID);
-        });
-        $('#warning-modal-title').html('Check Out Warning');
-        $("#warning-modal-span").html('check out ' + pID);
-        $('#warning-modal-confirm').html('CHECK OUT');
-        $("#warning-modal").modal('open');
+            $('#warning-modal-title').html('Check Out Warning');
+            $("#warning-modal-span").html('check out ' + pID);
+            $('#warning-modal-confirm').html('CHECK OUT');
+            $("#warning-modal").modal('open');
+        }
     }
-}
 }
 
 EVN_Registrants.prototype.CreateFirebaseRegistrantEntry = function (pID) {
@@ -819,7 +819,7 @@ EVN_Registrants.prototype.LoadContent = function (pAPP_ID, pSECRET) {
         $('#clear-log-btn').remove();
     }
 
-    if (EVN.mUser.HasPermission('ManageUsers') || EVN.mUser.HasPermission('All')) {
+    if (EVN.mUser.HasPermission('ViewStaff') || EVN.mUser.HasPermission('All')) {
         $('.nav-dropdown-staff').show();
     } else {
         $(".nav-dropdown-staff").remove();
@@ -881,7 +881,7 @@ EVN_Registrants.prototype.LoadContent = function (pAPP_ID, pSECRET) {
                         if (snap.val()[ID].Status == "CHECKED_OUT" || snap.val()[ID].Status == "NOT_ATTENDED") {
                             ButtonID.addClass('waves-effect waves-teal check-in');
                             ButtonID.removeClass('checked-in disabled');
-                            ButtonID.html("CHECK-IN");
+                            ButtonID.html("CHECK IN");
                             EVN.mStatus[ID].Status = snap.val()[ID].Status;
                             ButtonID.click(function () {
                                 ID = event.target.id;
@@ -910,8 +910,12 @@ EVN_Registrants.prototype.Load = function (pAPP_ID, pSECRET) {
     // Check user account type
     var EVN = this;
     EVN.mUser.Load(function () {
-        if (EVN.mUser.HasPermission('ViewRegistrants') || EVN.mUser.HasPermission('All')) {
-            EVN.LoadContent(pAPP_ID, pSECRET);
+        if (EVN.mUser.mStatus == 'CHECKED_IN' || EVN.mUser.HasPermission('CheckInAccessOverride') || EVN.mUser.HasPermission('All')) {
+            if (EVN.mUser.HasPermission('ViewRegistrants') || EVN.mUser.HasPermission('All')) {
+                EVN.LoadContent(pAPP_ID, pSECRET);
+            }
+        } else {
+            window.location = "settings.html";
         }
     });
 }

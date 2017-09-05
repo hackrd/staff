@@ -89,8 +89,15 @@ EVN_Settings.prototype.LoadContent = function () {
     var Hash = window.location.hash;
     Hash = Hash.toLowerCase();
 
-    if (EVN.mUser.HasPermission('ManageUsers') || EVN.mUser.HasPermission('All')) {
-        // View Staff panel
+    if (EVN.mUser.mStatus == 'CHECKED_IN' || EVN.mUser.HasPermission('CheckInAccessOverride') || EVN.mUser.HasPermission('All')) {
+        $('.nav-dropdown-registrants').show();
+    }
+    else {
+        $('.nav-dropdown-registrants').remove();
+    }
+
+    if (EVN.mUser.HasPermission('ViewStaff') || EVN.mUser.HasPermission('All')) {
+        $('.nav-dropdown-staff').show();
     }
     else {
         $('.nav-dropdown-staff').remove();
@@ -130,6 +137,8 @@ EVN_Settings.prototype.Load = function () {
     $("#manage").hide();
     $("#about").hide();
     $("#loading-bar-wrapper").show();
+    $('.nav-dropdown-staff').hide();
+    $('.nav-dropdown-registrants').hide();
 
     var EVN = this;
 

@@ -304,3 +304,15 @@ nav {
 .italics {
     font-style: italic;
 }
+
+#staff-table {
+    width: 100%;
+    position: relative;
+    border-collapse: collapse;
+}
+
+#staff-table td {
+    border-collapse: collapse;
+    max-width: 200px;
+    overflow: auto;
+}

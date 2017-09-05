@@ -2,6 +2,10 @@
 Hack River Dell Staff Access Panel
 
 Versions will be published under two names: Prototype and Release. Only published versions will be noted on this document.
+## PROTOTYPE v0.23.3
+### Changelog
+- Staff members will no longer have access to the registrants unless they are 'CHECKED_IN' or have the permission 'CheckInAccessOverride'
+
 ## PROTOTYPE v0.23.2
 ### Changelog
 - Updated permissions

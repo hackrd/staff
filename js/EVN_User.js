@@ -24,6 +24,8 @@ var EVN_User = function () {
     this.mDiscordAccount = "";
     this.mPermissions = {};
     this.mActionLog = "";
+
+    this.mStatus= "";
 }
 
 EVN_User.prototype.GetUsername = function () {
@@ -319,6 +321,12 @@ EVN_User.prototype.Load = function (pCallback) {
             }
             else {
                 User.mActionLog = "";
+            }
+            if (typeof UserData.Status != 'undefined') {
+                USER.mStatus = UserData.Status;
+            }
+            else {
+                USER.mStatus = 'NOT_ATTENDED';
             }
             // Load permissions
             firebase.database().ref().child('Permissions').once('value').then(function (snap) {
