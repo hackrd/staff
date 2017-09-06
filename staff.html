@@ -34,20 +34,20 @@ Sean Kee <skee66499@gmail.com>
   <meta name="theme-color" content="#ffffff">
 
   <!-- Page Data -->
-  <title>Registrants - Hack River Dell Access EVN</title>
+  <title>Staff - Hack River Dell Access EVN</title>
 </head>
 
 <body>
   <ul id="nav-dropdown" class="uppercase dropdown-content">
-    <li class="nav-dropdown-registrants"><a href="#!">Registrants</a></li>
-    <li class="nav-dropdown-staff"><a href="staff.html">Staff</a></li>
+    <li class="nav-dropdown-registrants"><a href="registrants.html">Registrants</a></li>
+    <li class="nav-dropdown-staff"><a href="#!">Staff</a></li>
     <li class="nav-dropdown-settings"><a href="settings.html">Settings</a></li>
     <li class="divider"></li>
     <li><a class="ButtonLogOut" href="index.html">Logout</a></li>
   </ul>
   <ul id="slide-out" class="uppecase side-nav">
-    <li class="nav-dropdown-registrants"><a href="#!">Registrants</a></li>
-    <li class="nav-dropdown-staff"><a href="staff.html">Staff</a></li>
+    <li class="nav-dropdown-registrants"><a href="registrants.html">Registrants</a></li>
+    <li class="nav-dropdown-staff"><a href="">Staff</a></li>
     <li class="nav-dropdown-settings"><a href="settings.html">Settings</a></li>
     <li class="divider"></li>
     <li><a class="ButtonLogOut" href="index.html">Logout</a></li>
@@ -57,16 +57,16 @@ Sean Kee <skee66499@gmail.com>
       <div class="container">
         <div class="nav-wrapper">
           <a href="#" class="brand-logo center">Hack River Dell Access</a>
-          <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons float-left">menu</i><span class="mobile-nav-icon-text">REGISTRANTS</span></a>
+          <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons float-left">menu</i><span class="mobile-nav-icon-text">STAFF</span></a>
           <ul id="nav-mobile" class="right hide-on-med-and-down">
-            <li class="nav-dropdown-btn"><a class="uppercase dropdown-button waves-effect nav-dropdown-btn" href="#!" data-activates="nav-dropdown">Registrants<i class="material-icons right">arrow_drop_down</i></a></li>
+            <li class="nav-dropdown-btn"><a class="uppercase dropdown-button waves-effect nav-dropdown-btn" href="#!" data-activates="nav-dropdown">STAFF<i class="material-icons right">arrow_drop_down</i></a></li>
           </ul>
         </div>
       </div>
       <div class="nav-content">
         <ul class="tabs tabs-transparent">
           <div class="tabs-center">
-            <li class="tab"><a href="#registrants">Registrants</a></li>
+            <li class="tab"><a href="#staff">Staff</a></li>
             <li class="tab logs-tab disabled"><a href="#logs" onclick="EVN_Dash.LoadLogsTab()">Logs</a></li>
             <li class="tab statistics-tab disabled"><a href="#statistics">Statistics</a></li>
             <li class="tab tools-tab disabled"><a href="#tools">Tools</a></li>
@@ -85,16 +85,16 @@ Sean Kee <skee66499@gmail.com>
       </div>
     </div>
 
-    <!-- Registrants Tab -->
-    <div id="registrants" class="container" style="display: none;">
-      <div id="registrants-wrapper" class="top-space">
+    <!-- Staff Tab -->
+    <div id="staff" class="container" style="display: none;">
+      <div id="staff-wrapper" class="top-space">
         <!-- Total Counts -->
         <div class="row">
           <div class="col s3"></div>
           <div id="totals" class="anti-card col s6 center">
             <h4 class="center"> Totals </h4>
             <div class="card-action">
-              <h5 class="totals-registrants left"> Registrants: </h5>
+              <h5 class="totals-staff left"> Staff: </h5>
               <h5 class="totals-checked-in right"> Checked In: </h5>
             </div>
             <div class="card-action" style="border-top: none"></div>
@@ -103,62 +103,30 @@ Sean Kee <skee66499@gmail.com>
 
         <div class="divider"></div>
 
-        <div id="registrants-list" class="card">
-          <div id="registrants-list-card" class="card-content" style="padding-left: 50px; padding-right: 50px;">
-            <!--h4 class="center"> Registered Hackers </h4-->
+        <div id="staff-list" class="card">
+          <div id="staff-list-card" class="card-content" style="padding-left: 50px; padding-right: 50px;">
+            <!--h4 class="center"> Staff Hackers </h4-->
             <h4 class="center">
-              <span style="padding-top: .75rem;" class="left"><i class="material-icons">verified_user</i>   Registered Hackers</span>
-              <input id="SearchField" type="text" class="search-field form-control right" onkeyup="SK.SearchTable('registrants-table', [0, 1, 2, 3])"
-                placeholder="Search registrants..." required="" />
+              <span style="padding-top: .75rem;" class="left"><i class="material-icons">verified_user</i>   Eventman Access List</span>
+              <input id="SearchField" type="text" class="search-field form-control right" onkeyup="SK.SearchTable('staff-table', [0, 1, 2, 3])"
+                placeholder="Search staff..." required="" />
             </h4>
-            <table id="registrants-table" class="striped">
+            <table id="staff-table" class="striped">
               <thead>
                 <tr>
-                  <th id="id">ID</th>
                   <th id="last_name">Last</th>
                   <th id="first_name">First</th>
+                  <th id="type">Account Type</th>
                   <th id="email">Email</th>
                   <th id="phone_number">Phone #</th>
-                  <th id="shirt_size">Shirt Size</th>
-                  <th id="dietary_restrictions">Dietary Restrictions</th>
-                  <th id="last_updated">Last Updated</th>
+                  <th id="discord_account">Discord</th>
+                  <th id="last_seen">Last Seen</th>
                   <th id="status">Status</th>
                   <th></th>
                 </tr>
               </thead>
 
-              <tbody id="registrants-table-body">
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      <div id="banned-wrapper" class="top-space">
-        <div id="banned-list" class="card">
-          <div id="banned-list-card" class="card-content" style="padding-left: 50px; padding-right: 50px;">
-            <h4 class="center">
-              <span class="left"><!--i class="material-icons">highlight_off</i-->   Banned </span>
-              <i class="material-icons small left" style="margin-top: .25rem;">keyboard_arrow_right</i>
-              <span id="total-banned" class="left"> Total: </span>
-            </h4>
-            <!--h5 id="total-banned" class="center"> Total: </h5-->
-            <table id="banned-table" class="striped ">
-              <thead>
-                <tr>
-                  <th id="banned-id">ID</th>
-                  <th id="banned-last_name">Last</th>
-                  <th id="banned-first_name">First</th>
-                  <th id="banned-email">Email</th>
-                  <th id="banned-phone_number">Phone #</th>
-                  <th id="banned-shirt_size">Shirt Size</th>
-                  <th id="banned-dietary_restrictions">Dietary Restrictions</th>
-                  <th id="banned-last_update">Last Updated</th>
-                  <th id="banned-status">Status</th>
-                  <th></th>
-                </tr>
-              </thead>
-
-              <tbody id="banned-table-body">
+              <tbody id="staff-table-body">
               </tbody>
             </table>
           </div>
@@ -169,11 +137,56 @@ Sean Kee <skee66499@gmail.com>
     <!-- Profile Modal  -->
     <div id="profile-modal" class="modal modal-fixed-footer">
       <div class="modal-content">
+        <h4 style="width: 100%;"><span style="float: left;">Staff Profile</span><span id="profile-flags"></span></h4>
+        <p id="profile-content"></p>
+        <h5><span style="float: left;">Log </span><a id="clear-log-btn" href="#!" style="float: right" class="red-btn waves-effect waves-green btn-flat right">CLEAR LOG</a>
+        </h5>
+        <table id="profile-check-in-out-log-table" class="striped ">
+          <thead>
+            <tr>
+              <th id="action">Action</th>
+              <th id="timestamp">Timestamp</th>
+              <th id="verified_by">Verified By</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="profile-check-in-out-log-table-body">
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <a href="#!" class="modal-action modal-close waves-effect waves-grey btn-flat">Close</a>
+      </div>
+    </div>
+
+    <!-- Action Log Modal  -->
+    <div id="action-log-modal" class="modal modal-fixed-footer">
+      <div class="modal-content">
+        <h4 style="width: 100%;"><span style="float: left;">Action Log</span><span id="action-log-flags"></span><a id="clear-action-log-btn" href="#!" style="float: right" class="red-btn waves-effect waves-green btn-flat right">CLEAR LOG</a></h4>
+        <table id="action-log-table" class="striped ">
+          <thead>
+            <tr>
+              <th id="action">Action</th>
+              <th id="id">ID</th>
+              <th id="timestamp">Timestamp</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="action-log-table-body">
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <a href="#!" class="modal-action modal-close waves-effect waves-grey btn-flat">Close</a>
+      </div>
+    </div>
+
+    <!-- Permissions Modal  -->
+    <div id="profile-modal" class="modal modal-fixed-footer">
+      <div class="modal-content">
         <h4 style="width: 100%;"><span style="float: left;">Registrant Profile</span><span id="profile-flags"></span></h4>
         <p id="profile-content"></p>
         <h5><span style="float: left;">Log </span><a id="clear-log-btn" href="#!" style="float: right" class="red-btn waves-effect waves-green btn-flat right">CLEAR LOG</a>
-          <a id="ban-btn" href="#!" class="red-btn waves-effect waves-green btn-flat right" style="display: none;">BAN</a>
-          <a id="unban-btn" href="#!" class="red-btn waves-effect waves-green btn-flat right" style="display: none;">UNBAN</a>
         </h5>
         <table id="profile-check-in-out-log-table" class="striped ">
           <thead>
@@ -248,32 +261,30 @@ Sean Kee <skee66499@gmail.com>
               </div>
             </div>
             <div class="row">
-              <div class="col s12">
-                <label>What shift(s) can you work?<br><span class="italics">Please select all shifts you can work. Shift times are tentative/subject to change.</span></label>
-                <p>
-                  <input type="checkbox" id="ShiftOne"><label for="ShiftOne">Saturday Morning Shift: 7:00 AM-3:00 PM</label>
-                </p>
-                <p>
-                  <input type="checkbox" id="ShiftTwo"><label for="ShiftTwo">Saturday Afternoon Shift: 3:00 PM-10:00 PM</label>
-                </p>
-                <p>
-                  <input type="checkbox" id="ShiftThree"><label for="ShiftThree">Night Shift: 10:00 PM-7:00 AM</label>
-                </p>
-                <p>
-                  <input type="checkbox" id="ShiftFour"><label for="ShiftFour">Sunday Shift: 7:00 AM-4:00 PM</label>
-                </p>
-              </div>
+                <div class="col s12">
+                    <label>What shift(s) can you work?<br><span class="italics">Please select all shifts you can work. Shift times are tentative/subject to change.</span></label>
+                  <p>
+                      <input type="checkbox" id="ShiftOne"><label for="ShiftOne">Saturday Morning Shift: 7:00 AM-3:00 PM</label>
+                  </p>
+                  <p>
+                      <input type="checkbox" id="ShiftTwo"><label for="ShiftTwo">Saturday Afternoon Shift: 3:00 PM-10:00 PM</label>
+                  </p>
+                  <p>
+                      <input type="checkbox" id="ShiftThree"><label for="ShiftThree">Night Shift: 10:00 PM-7:00 AM</label>
+                  </p>
+                  <p>
+                      <input type="checkbox" id="ShiftFour"><label for="ShiftFour">Sunday Shift: 7:00 AM-4:00 PM</label>
+                  </p>
+                  </div>
             </div>
             <div class="row">
-              <div class="input-field col s12">
-                <input id="DiscordAccountField" type="text" class="form-control\" name="discord_account" required>
-                <label for="DiscordAccountField">Discord Account</label>
-                <p class="italics">We use Discord to communicate because it's good. If you have a Discord, drop your tag (example: @DiscordName#1234)
-                  above. If you don't have one, sign up at <a href="https://www.google.com/url?q=http://discordapp.com&sa=D&ust=1504364136485000&usg=AFQjCNFBV7Oc3sjAgpJZCYiP7TkctBDjQA">discordapp.com</a>,
-                  and then put your Discord tag below. It is imperative that you include your ENTIRE tag.</p>
+                <div class="input-field col s12">
+                  <input id="DiscordAccountField" type="text" class="form-control\" name="discord_account" required>
+                  <label for="DiscordAccountField">Discord Account</label>
+                  <p class="italics">We use Discord to communicate because it's good. If you have a Discord, drop your tag (example: @DiscordName#1234) above. If you don't have one, sign up at <a href="https://www.google.com/url?q=http://discordapp.com&sa=D&ust=1504364136485000&usg=AFQjCNFBV7Oc3sjAgpJZCYiP7TkctBDjQA">discordapp.com</a>, and then put your Discord tag below. It is imperative that you include your ENTIRE tag.</p>
+                </div>
               </div>
-            </div>
-            <!--div class="divider"></div>
+              <!--div class="divider"></div>
             <div class="row top-space">
               <div class="input-field col s5 left">
                 <input id="NewPasswordField" type="password" class="form-control" name="password" placeholder="New Password" required>
@@ -294,11 +305,18 @@ Sean Kee <skee66499@gmail.com>
 
     <!-- Logs Tab -->
     <div id="logs" class="" style="display: none;">
+        <div id="logs-tabs" class="secondary-tabs">
+                <ul class="tabs-fixed-width tabs-transparent tabs">
+                  <li class="tab col s3"><a class="active" href="#check-in-out-logs-list">History</a></li>
+                  <li class="tab col s3"><a id="action-logs-list-tab" class="disabled" href="#action-logs-list">Action Log</a></li>
+                </ul>
+            </div>
       <div id="logs-wrapper" class="container top-space">
+
         <div id="check-in-out-logs-list" class="card">
           <div id="check-in-out-logs-list-card" class="card-content" style="padding-left: 50px; padding-right: 50px;">
             <h4 class="center">
-              <span style="padding-top: .75rem;" class="left">Registrants History</span>
+              <span style="padding-top: .75rem;" class="left">Staff History</span>
               <input id="SearchFieldTwo" type="text" class="search-field form-control right" onkeyup="SK.SearchTable('check-in-out-logs-table', [0, 1, 3])"
                 placeholder="Search log..." required="" />
             </h4>
@@ -318,11 +336,34 @@ Sean Kee <skee66499@gmail.com>
             </table>
           </div>
         </div>
+        <div id="action-logs-list" class="card">
+            <div id="action-logs-list-card" class="card-content" style="padding-left: 50px; padding-right: 50px;">
+              <h4 class="center">
+                <span style="padding-top: .75rem;" class="left">Staff Actions Log</span>
+                <input id="SearchFieldThree" type="text" class="search-field form-control right" onkeyup="SK.SearchTable('action-logs-table', [0, 1, 3])"
+                  placeholder="Search log..." required="" />
+              </h4>
+              <table id="action-logs-table" class="striped">
+                <thead>
+                  <tr>
+                    <th id="action-logs-action">Action</th>
+                    <th id="action-logs-id">ID</th>
+                    <th id="action-logs-timestamp">Timestamp</th>
+                    <th id="action-logs-verified_by">Verified By</th>
+                    <th></th>
+                  </tr>
+                </thead>
+  
+                <tbody id="action-logs-table-body">
+                </tbody>
+              </table>
+            </div>
+          </div>
       </div>
     </div>
 
     <!-- Statistics Tab -->
-    <div id="statistics" class="container top-space" style="display: none;">
+    <div id="statistics" class="top-space container" style="display: none;">
       <div id="stats-wrapper" class="">
         <!-- Total Counts -->
         <div class="row">
@@ -330,7 +371,7 @@ Sean Kee <skee66499@gmail.com>
           <div id="totals" class="anti-card col s6 center">
             <h4 class="center"> Totals </h4>
             <div class="card-action">
-              <h5 class="totals-registrants left"> Registrants: </h5>
+              <h5 class="totals-staff left"> staff: </h5>
               <h5 class="totals-checked-in right"> Checked In: </h5>
             </div>
             <div class="card-action" style="border-top: none"></div>
@@ -427,13 +468,13 @@ Sean Kee <skee66499@gmail.com>
 
         <div class="row">
           <div class="col s3"></div>
-          <div id="download-registrants" class="card col s6 center">
-            <div id="download-registrants-card" class="card-content">
-              <h4 class="center">Export Registrants</h4>
-              <p class="center italics">*Does not include banned registrants</p>
+          <div id="download-staff" class="card col s6 center">
+            <div id="download-staff-card" class="card-content">
+              <h4 class="center">Export Staff</h4>
+              <p class="center italics">*Does not include banned staff</p>
               <div class="card-action" style="border-top: none">
-                <a id="download-csv-button" class="waves-effect waves-light btn" onclick="EVN_Dash.ExportRegistrants('CSV')"><i class="material-icons" style="float: left;">file_download</i>  CSV</a>
-                <a id="download-csv-button" class="waves-effect waves-light btn" onclick="EVN_Dash.ExportRegistrants('JSON')"><i class="material-icons" style="float: left;">file_download</i>  JSON</a>
+                <a id="download-csv-button" class="waves-effect waves-light btn" onclick="EVN_Dash.ExportStaff('CSV')"><i class="material-icons" style="float: left;">file_download</i>  CSV</a>
+                <a id="download-csv-button" class="waves-effect waves-light btn" onclick="EVN_Dash.ExportStaff('JSON')"><i class="material-icons" style="float: left;">file_download</i>  JSON</a>
               </div>
             </div>
           </div>
@@ -484,8 +525,7 @@ Sean Kee <skee66499@gmail.com>
   <script src="js/EVN_AuthenticationService.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/js/materialize.min.js"></script>
   <script src="js/EVN_User.js"></script>
-  <script src="js/EVN_Registrants.js"></script>
-  <!--<script src="js/EVN_Load.js"></script>-->
+  <script src="js/EVN_Staff.js"></script>
   <script>
     $(document).ready(function () {
       $('.modal').modal();
@@ -500,16 +540,11 @@ Sean Kee <skee66499@gmail.com>
       $('.collapsible').collapsible();
       $('select').material_select();
     });
-    var APP_ID = "";
-    var SECRET = "";
-    var EVN_Dash = new EVN_Registrants();
+
+    var EVN_Dash = new EVN_Staff();
     AUTH.onAuthStateChanged(firebaseUser => {
       if (firebaseUser) {
-        firebase.database().ref().child('Keys').once('value').then(function (snap) {
-          APP_ID = snap.val().MyMLH_APP_ID;
-          SECRET = snap.val().MyMLH_SECRET;
-          EVN_Dash.Load(APP_ID, SECRET);
-        });
+          EVN_Dash.Load();
       } else {
         IsFailure();
       }

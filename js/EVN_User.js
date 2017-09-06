@@ -151,8 +151,8 @@ EVN_User.prototype.AppendActionLog = function (pEntry, pCallback) {
             ActionLog: Log
         });
 
-        Log += '%' + USER.mUsername;
-        (typeof pCallback === 'function') ? USER.AppendAuditLog('StaffAction', Log, pCallback) : USER.AppendAuditLog('StaffAction', Log);
+        pEntry += '%' + USER.mUsername;
+        (typeof pCallback === 'function') ? USER.AppendAuditLog('StaffAction', pEntry, pCallback) : USER.AppendAuditLog('StaffAction', pEntry);
     });
 }
 
@@ -175,7 +175,7 @@ EVN_User.prototype.AppendAuditLog = function (pLog, pEntry, pCallback) {
 
 EVN_User.prototype.RemoveAuditLogEntries = function (pLog, pEntry, pCallback) {
     var USER = this;
-    if (USER.HasPermission('Clear' + pLog + 'Log'))
+    if (USER.HasPermission('Clear' + pLog + 'Log') || USER.HasPermission('All')) {
         firebase.database().ref().child('APPDATA').child('AuditLogs').child(pLog).once('value').then(function (snap) {
             var Data = [];
             if (typeof snap.val().Log != 'undefined') {
@@ -231,8 +231,11 @@ EVN_User.prototype.RemoveAuditLogEntries = function (pLog, pEntry, pCallback) {
                 Log: NewLog
             });
 
+            console.log(NewLog);
+
             typeof pCallback === 'function' && pCallback();
         });
+    }
 };
 
 EVN_User.prototype.ClearAuditLog = function (pLog, pCallback) {

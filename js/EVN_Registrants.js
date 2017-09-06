@@ -836,6 +836,30 @@ EVN_Registrants.prototype.HandleData = function (pData) {
     });
 }
 
+EVN_Registrants.prototype.LoadLogsTab = function (pCallback) {
+    var EVN = this;
+
+    firebase.database().ref().child('APPDATA').child('AuditLogs').once('value').then(function (snap) {
+    var Data = snap.val().Registrants.Log;
+    var RegistrantsLog = "";
+    var RegistrantsLogData = "";
+
+    if (typeof Data != 'undefined') {
+        RegistrantsLogData = Data;
+        RegistrantsLogData = RegistrantsLogData.split(' ');
+        var TotalEntries = Object.keys(RegistrantsLogData).length;
+        var RegistrantsLogEntry = "";
+        for (var i = 0; i < TotalEntries; i++) {
+            RegistrantsLogEntry = RegistrantsLogData[i];
+            RegistrantsLogEntry = RegistrantsLogEntry.split('%');
+            RegistrantsLog += "<tr><td>" + RegistrantsLogEntry[0] + "</td><td>" + RegistrantsLogEntry[1] + "</td><td>" + RegistrantsLogEntry[2] + "</td><td>" + RegistrantsLogEntry[3] + "</td></tr>";
+        }
+        $('#check-in-out-logs-table-body').html(RegistrantsLog);
+    }
+    typeof pCallback === 'function' && pCallback();
+    });
+}
+
 EVN_Registrants.prototype.LoadContent = function (pAPP_ID, pSECRET) {
     var EVN = this;
     var Hash = window.location.hash;
@@ -856,13 +880,13 @@ EVN_Registrants.prototype.LoadContent = function (pAPP_ID, pSECRET) {
 
         EVN.HandleData(EVN.mData);
 
+        EVN.LoadLogsTab($('.logs-tab').removeClass('disabled'));
         if (EVN.mUser.HasPermission('ViewStatistics') || EVN.mUser.HasPermission('All')) {
             // Stats panel
             $('.statistics-tab').removeClass('disabled');
         } else {
             $('#statistics').remove();
         }
-
 
         if (EVN.mUser.HasPermission('CreateRegistrantRaffle') || EVN.mUser.HasPermission('DrawRegistrantRaffle') || EVN.mUser.HasPermission('All')) {
             // Load tools tab

@@ -100,12 +100,8 @@ nav {
     text-transform: uppercase !important;
 }
 
-#content {
-    margin-top: 5rem;
-}
-
 .top-space {
-    margin-top: 3rem;
+    margin-top: 5rem;
 }
 .bottom-space {
     margin-bottom: 3rem;
@@ -278,8 +274,8 @@ nav {
     font-size: 1rem;
 }
 
-#SearchField {
-    width: 35%;
+.search-field {
+    width: 35% !important;
 }
 
 #total-banned {
@@ -323,4 +319,9 @@ nav {
     border-collapse: collapse;
     max-width: 200px;
     overflow: auto;
+}
+
+.secondary-tabs {
+    margin-top: 48px;
+    background-color: #575757;
 }

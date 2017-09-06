@@ -2,6 +2,24 @@
 Hack River Dell Staff Access Panel
 
 Versions will be published under two names: Prototype and Release. Only published versions will be noted on this document.
+## PROTOTYPE v0.24.0
+### New Features
+##### Registrants Page
+- New 'Logs' tab added to display all registrants history
+##### Staff Page
+- Staff are displayed in a table list
+- Individual profiles are visible under 'More'
+- Individual action logs are visible under 'More'
+- Staff check in/out
+- All staff history and staff action history are visible under 'Logs' tab
+- Staff clocked time is displayed in the profile in HH:MM:SS
+##### Settings Page
+- 'Clear Staff' now works
+- Added 'Clear Staff Actions'
+### Bug Fixes
+- Clear All Registrants audit log fixed
+- StaffAction audit log fixed
+
 ## PROTOTYPE v0.23.5
 ### Changelog
 - 'System Update' notification

@@ -25,6 +25,7 @@ EVN_Settings.prototype.ClearAllRegistrantsLog = function () {
 
             for (var i = 0; i < IDs.length; i++) {
                 ID = IDs[i];
+                EVN.mUser.RemoveAuditLogEntries('Master', snap.val()[ID].Log);
                 firebase.database().ref().child('APPDATA').child('Registrants').child(ID).set({
                     Status: "NOT_ATTENDED",
                 });
@@ -32,10 +33,56 @@ EVN_Settings.prototype.ClearAllRegistrantsLog = function () {
             var ActionLog = 'CLRREGISTRANTLOG%ALL%' + SK.GetESTTimestamp();
             EVN.mUser.AppendActionLog(ActionLog);
             ActionLog += '%' + EVN.mUser.mUsername;
-            EVN.mUser.AppendAuditLog(ActionLog);
             EVN.mUser.ClearAuditLog('Registrants');
             Materialize.toast("Successfully cleared logs for all registrants", 4000, "toast-fix");
             console.log('Successfully cleared logs for all registrants');
+        });
+    }
+}
+
+EVN_Settings.prototype.ClearAllStaffLog = function () {
+    var EVN = this;
+
+    if (EVN.mUser.HasPermission('ClearAllStaffLog') || EVN.mUser.HasPermission('All')) {
+        firebase.database().ref().child('APPDATA').child('Users').once('value').then(function (snap) {
+            var ID = "";
+            var IDs = Object.keys(snap.val());
+
+            for (var i = 0; i < IDs.length; i++) {
+                ID = IDs[i];
+                EVN.mUser.RemoveAuditLogEntries('Master', snap.val()[ID].Log);
+                firebase.database().ref().child('APPDATA').child('Users').child(ID).update({
+                    Status: "NOT_ATTENDED",
+                    Log: null
+                });
+            }
+            var ActionLog = 'CLRSTAFFLOG%ALL%' + SK.GetESTTimestamp();
+            EVN.mUser.AppendActionLog(ActionLog);
+            ActionLog += '%' + EVN.mUser.mUsername;
+            EVN.mUser.ClearAuditLog('Staff');
+            Materialize.toast("Successfully cleared logs for all staff", 4000, "toast-fix");
+            console.log('Successfully cleared logs for all staff');
+        });
+    }
+}
+
+EVN_Settings.prototype.ClearAllStaffActionsLog = function () {
+    var EVN = this;
+
+    if (EVN.mUser.HasPermission('ClearActionLog') || EVN.mUser.HasPermission('All')) {
+        firebase.database().ref().child('APPDATA').child('Users').once('value').then(function (snap) {
+            var ID = "";
+            var IDs = Object.keys(snap.val());
+
+            for (var i = 0; i < IDs.length; i++) {
+                ID = IDs[i];
+                firebase.database().ref().child('APPDATA').child('Users').child(ID).update({
+                    ActionLog: null
+                });
+            }
+            EVN.mUser.ClearAuditLog('StaffAction');
+            Materialize.toast("Successfully cleared action logs for all staff", 4000, "toast-fix");
+            console.log('Successfully cleared action logs for all staff');
         });
     }
 }
@@ -110,10 +157,16 @@ EVN_Settings.prototype.LoadContent = function () {
     
     EVN.LoadAccountTab();
 
-    if (EVN.mUser.HasPermission('ClearAllRegistrantsLog') || EVN.mUser.HasPermission('All')) {
+    if (EVN.mUser.HasPermission('ClearAllRegistrantsLog') || EVN.mUser.HasPermission('ClearAllStaffLog') || EVN.mUser.HasPermission('ClearActionLog') || EVN.mUser.HasPermission('All')) {
         $('.manage-tab').removeClass('disabled');
         $('#clear-registrants-warning-modal-confirm').click(function () {
             EVN.ClearAllRegistrantsLog();
+        });
+        $('#clear-staff-warning-modal-confirm').click(function () {
+            EVN.ClearAllStaffLog();
+        });
+        $('#clear-staff-actions-warning-modal-confirm').click(function () {
+            EVN.ClearAllStaffActionsLog();
         });
     }
     else {
