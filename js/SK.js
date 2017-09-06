@@ -99,7 +99,6 @@ SKJS.prototype.YYYYMMDDToMMDDYYYY = function (pDate) {
     return Month + '/' + Day + '/' + Year;
 }
 
-// Takes two timestampes in MM/DD/YYYY@HH:MM:SS-ZONE and returns the duration in seconds
 // Takes two Elapsed Epoch milliseconds and returns duration in seconds
 SKJS.prototype.CalculateDuration = function (pStart, pEnd) {
     /*var ElapsedSeconds = 0;

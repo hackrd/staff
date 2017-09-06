@@ -26,6 +26,28 @@ var EVN_User = function () {
     this.mActionLog = "";
 
     this.mStatus = "";
+
+    this.mVersion = "";
+}
+
+EVN_User.prototype.IsSystemUpdate = function () {
+    var ModalHtml = "<div id='system-update-modal' class=\"modal\"><div class=\"modal-content\"><h4><i class=\"material-icons small\">new_releases</i>   System Update</h4><p>A new system update has been released! Please refresh your page to get the latest content.</p></div><div class=\"modal-footer\"><a href=\"#!\" class=\"modal-action modal-close waves-effect waves-grey btn-flat \">Cancel</a><a id=\"\" href=\"#!\" class=\"modal-action modal-close waves-effect waves-green btn-flat \" onclick=\"location.reload();\">Update</a></div></div>";
+    $('#content').html($('#content').html() + ModalHtml);
+    $('#system-update-modal').modal({
+        dismissible: false, // Modal can be dismissed by clicking outside of the modal
+        opacity: .5, // Opacity of modal background
+        inDuration: 300, // Transition in duration
+        outDuration: 200, // Transition out duration
+        startingTop: '4%', // Starting top style attribute
+        endingTop: '10%', // Ending top style attribute
+        ready: function (modal, trigger) { // Callback for Modal open. Modal and trigger parameters available.
+        },
+        complete: function () {
+
+        } // Callback for Modal close
+    }
+    );
+    $('#system-update-modal').modal('open');
 }
 
 EVN_User.prototype.GetUsername = function () {
@@ -154,63 +176,63 @@ EVN_User.prototype.AppendAuditLog = function (pLog, pEntry, pCallback) {
 EVN_User.prototype.RemoveAuditLogEntries = function (pLog, pEntry, pCallback) {
     var USER = this;
     if (USER.HasPermission('Clear' + pLog + 'Log'))
-    firebase.database().ref().child('APPDATA').child('AuditLogs').child(pLog).once('value').then(function (snap) {
-        var Data = [];
-        if (typeof snap.val().Log != 'undefined') {
-            Data = snap.val().Log.split(' ');
-        } else {
-            return;
-        }
-        var OldLog = [];
-        var NewLog = "";
-        var Entries = [];
+        firebase.database().ref().child('APPDATA').child('AuditLogs').child(pLog).once('value').then(function (snap) {
+            var Data = [];
+            if (typeof snap.val().Log != 'undefined') {
+                Data = snap.val().Log.split(' ');
+            } else {
+                return;
+            }
+            var OldLog = [];
+            var NewLog = "";
+            var Entries = [];
 
-        if (pEntry.constructor !== Array) {
-            Entries[0] = pEntry;
-        }
-        else {
-            Entries = pEntry;
-        }
-        if (Data.constructor !== Array) {
-            OldLog[0] = Data;  
-        }
-        else {
-            OldLog = Data;
-        }
+            if (pEntry.constructor !== Array) {
+                Entries[0] = pEntry;
+            }
+            else {
+                Entries = pEntry;
+            }
+            if (Data.constructor !== Array) {
+                OldLog[0] = Data;
+            }
+            else {
+                OldLog = Data;
+            }
 
-        /*for (var i = 0; i < Entries.length; i++) {
-            for (var j = 0; j < OldLog.length; j++) {
-                if (Entries[i] == OldLog[j]) {
-                    OldLog[j] = undefined;
+            /*for (var i = 0; i < Entries.length; i++) {
+                for (var j = 0; j < OldLog.length; j++) {
+                    if (Entries[i] == OldLog[j]) {
+                        OldLog[j] = undefined;
+                    }
+                }
+            }*/
+
+            for (var i = 0; i < OldLog.length; i++) {
+                for (var j = 0; j < Entries.length; j++) {
+                    if (Entries[j] == OldLog[i]) {
+                        OldLog[i] = undefined;
+                    }
+                }
+                if (typeof OldLog[i] != 'undefined') {
+                    NewLog += OldLog[i] + ' ';
                 }
             }
-        }*/
-        
-        for (var i = 0; i < OldLog.length; i++) {
-            for (var j = 0; j < Entries.length; j++) {
-                if (Entries[j] == OldLog[i]) {
-                    OldLog[i] = undefined;
-                }
-            }
-            if (typeof OldLog[i] != 'undefined') {
-                NewLog += OldLog[i] + ' ';
-            }
-        }
 
-        if (NewLog[NewLog.length - 1] == ' ') {
-            NewLog = NewLog.slice(0, -1);
-        }
-        
-        if (NewLog == ' ' || NewLog == '') {
-            NewLog = null;
-        } 
+            if (NewLog[NewLog.length - 1] == ' ') {
+                NewLog = NewLog.slice(0, -1);
+            }
 
-        firebase.database().ref().child('APPDATA').child('AuditLogs').child(pLog).update({
-            Log: NewLog
+            if (NewLog == ' ' || NewLog == '') {
+                NewLog = null;
+            }
+
+            firebase.database().ref().child('APPDATA').child('AuditLogs').child(pLog).update({
+                Log: NewLog
+            });
+
+            typeof pCallback === 'function' && pCallback();
         });
-
-        typeof pCallback === 'function' && pCallback();
-    });
 };
 
 EVN_User.prototype.ClearAuditLog = function (pLog, pCallback) {
@@ -398,52 +420,69 @@ EVN_User.prototype.IsFirstLogin = function (pUid, pCallback) {
 EVN_User.prototype.Load = function (pCallback) {
     var USER = this;
     var Uid = firebase.auth().currentUser.uid;
-    firebase.database().ref().child('APPDATA').child('Users').once('value').then(function (snap) {
-        if (typeof snap.val()[Uid] != 'undefined' && typeof snap.val()[Uid].FirstLogin != 'undefined' && snap.val()[Uid].FirstLogin == false) {
-            $('#first-login-modal').remove();
-            var UserData = snap.val()[Uid];
-            USER.mUid = UserData.Uid;
-            USER.mUsername = UserData.Username;
-            USER.mType = UserData.Type;
-            USER.mEmail = UserData.Email;
-            USER.mFirstName = UserData.FirstName;
-            USER.mLastName = UserData.LastName;
-            USER.mPhoneNumber = UserData.PhoneNumber;
-            USER.mSize = UserData.Size;
-            USER.mAvailability = UserData.Availability;
-            USER.mAvailability = USER.mAvailability.split('%');
-            USER.mAvailability.pop();
-            USER.mDiscordAccount = UserData.DiscordAccount;
-            if (typeof UserData.ActionLog != 'undefined') {
-                USER.mActionLog = UserData.ActionLog;
-            }
-            else {
-                User.mActionLog = "";
-            }
-            if (typeof UserData.Status != 'undefined') {
-                USER.mStatus = UserData.Status;
-            }
-            else {
-                USER.mStatus = 'NOT_ATTENDED';
-            }
-            // Load permissions
-            firebase.database().ref().child('Permissions').once('value').then(function (snap) {
-                // Load predefined permissions
-                USER.mPermissions = snap.val()[USER.mType];
-                // Load user-specific permissions
-                if (typeof UserData.Permissions != 'undefined') {
-                    var Keys = Object.keys(UserData.Permissions);
-                    for (var i = 0; i < Keys.length; i++) {
-                        USER.mPermissions[Keys[i]] = UserData.Permissions[Keys[i]];
-                    }
-                }
-                USER.UpdateLastSeen();
-                pCallback();
-                //console.log(USER);
+    firebase.database().ref().child('APPDATA').child('Misc').child('Version').once('value').then(function (snap) {
+        if (snap.val().Version != EVN_Version) {
+            firebase.database().ref().child('APPDATA').child('Misc').update({
+                Version: EVN_Version
             });
+            USER.mVersion = EVN_Version;
+        } else {
+            USER.mVersion = snap.val().Version;
         }
-        else {
-            USER.IsFirstLogin(Uid, pCallback);
-        }
+
+        firebase.database().ref().child('APPDATA').child('Misc').child('Version').on('value', snap => {
+            if (snap.val() != USER.mVersion) {
+                USER.IsSystemUpdate();
+            }
+        });
+
+        firebase.database().ref().child('APPDATA').child('Users').once('value').then(function (snap) {
+            if (typeof snap.val()[Uid] != 'undefined' && typeof snap.val()[Uid].FirstLogin != 'undefined' && snap.val()[Uid].FirstLogin == false) {
+                $('#first-login-modal').remove();
+                var UserData = snap.val()[Uid];
+                USER.mUid = UserData.Uid;
+                USER.mUsername = UserData.Username;
+                USER.mType = UserData.Type;
+                USER.mEmail = UserData.Email;
+                USER.mFirstName = UserData.FirstName;
+                USER.mLastName = UserData.LastName;
+                USER.mPhoneNumber = UserData.PhoneNumber;
+                USER.mSize = UserData.Size;
+                USER.mAvailability = UserData.Availability;
+                USER.mAvailability = USER.mAvailability.split('%');
+                USER.mAvailability.pop();
+                USER.mDiscordAccount = UserData.DiscordAccount;
+                if (typeof UserData.ActionLog != 'undefined') {
+                    USER.mActionLog = UserData.ActionLog;
+                }
+                else {
+                    User.mActionLog = "";
+                }
+                if (typeof UserData.Status != 'undefined') {
+                    USER.mStatus = UserData.Status;
+                }
+                else {
+                    USER.mStatus = 'NOT_ATTENDED';
+                }
+                // Load permissions
+                firebase.database().ref().child('Permissions').once('value').then(function (snap) {
+                    // Load predefined permissions
+                    USER.mPermissions = snap.val()[USER.mType];
+                    // Load user-specific permissions
+                    if (typeof UserData.Permissions != 'undefined') {
+                        var Keys = Object.keys(UserData.Permissions);
+                        for (var i = 0; i < Keys.length; i++) {
+                            USER.mPermissions[Keys[i]] = UserData.Permissions[Keys[i]];
+                        }
+                    }
+                    USER.UpdateLastSeen();
+                    pCallback();
+                    //console.log(USER);
+                });
+            }
+            else {
+                USER.IsFirstLogin(Uid, pCallback);
+            }
+        });
     });
 }

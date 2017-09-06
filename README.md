@@ -2,6 +2,10 @@
 Hack River Dell Staff Access Panel
 
 Versions will be published under two names: Prototype and Release. Only published versions will be noted on this document.
+## PROTOTYPE v0.23.5
+### Changelog
+- 'System Update' notification
+
 ## PROTOTYPE v0.23.4
 ### Changelog
 - Every action is tracked in the Audit Logs
