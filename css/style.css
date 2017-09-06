@@ -305,6 +305,14 @@ nav {
     font-style: italic;
 }
 
+#staff-list {
+    margin-top: 20px;
+}
+
+#staff-list-card {
+    overflow: auto;
+}
+
 #staff-table {
     width: 100%;
     position: relative;

@@ -25,7 +25,7 @@ var EVN_User = function () {
     this.mPermissions = {};
     this.mActionLog = "";
 
-    this.mStatus= "";
+    this.mStatus = "";
 }
 
 EVN_User.prototype.GetUsername = function () {
@@ -36,7 +36,7 @@ EVN_User.prototype.GetUsername = function () {
 }
 
 // Returns true if user has pPermission
-EVN_User.prototype.HasPermission = function(pPermission) {
+EVN_User.prototype.HasPermission = function (pPermission) {
     var USER = this;
     if (typeof USER.mPermissions[pPermission] != 'undefined') {
         if (USER.mPermissions[pPermission] == true) {
@@ -68,7 +68,7 @@ EVN_User.prototype.CreateFirebaseEntry = function (pData, pCallback) {
         LastUpdated: SK.GetESTTimestamp(),
         LastSeen: SK.GetESTTimestamp()
     });
-    
+
     USER.mUid = pData.Uid;
     USER.mUsername = pData.Username;
     USER.mType = pData.Type;
@@ -86,7 +86,7 @@ EVN_User.prototype.CreateFirebaseEntry = function (pData, pCallback) {
     firebase.database().ref().child('Permissions').once('value').then(function (snap) {
         USER.mPermissions = snap.val()[USER.mType];
         //console.log(USER);
-        
+
         pCallback();
     });
 }
@@ -102,7 +102,7 @@ EVN_User.prototype.UpdateFirebaseEntry = function (pData, pCallback) {
         DiscordAccount: pData.DiscordAccount,
         LastUpdated: SK.GetESTTimestamp(),
     });
-    
+
     USER.mFirstName = pData.FirstName;
     USER.mLastName = pData.LastName;
     USER.mPhoneNumber = pData.PhoneNumber;
@@ -115,7 +115,7 @@ EVN_User.prototype.UpdateFirebaseEntry = function (pData, pCallback) {
     pCallback();
 }
 
-EVN_User.prototype.AppendActionLog = function (pEntry) {
+EVN_User.prototype.AppendActionLog = function (pEntry, pCallback) {
     var USER = this;
     firebase.database().ref().child('APPDATA').child('Users').child(USER.mUid).once('value').then(function (snap) {
         var Log = "";
@@ -128,7 +128,105 @@ EVN_User.prototype.AppendActionLog = function (pEntry) {
         firebase.database().ref().child('APPDATA').child('Users').child(USER.mUid).update({
             ActionLog: Log
         });
+
+        Log += '%' + USER.mUsername;
+        (typeof pCallback === 'function') ? USER.AppendAuditLog('StaffAction', Log, pCallback) : USER.AppendAuditLog('StaffAction', Log);
     });
+}
+
+EVN_User.prototype.AppendAuditLog = function (pLog, pEntry, pCallback) {
+    firebase.database().ref().child('APPDATA').child('AuditLogs').child(pLog).once('value').then(function (snap) {
+        var Log = "";
+        if (typeof snap.val().Log != 'undefined') {
+            Log = snap.val().Log + ' ' + pEntry;
+        }
+        else {
+            Log = pEntry;
+        }
+        firebase.database().ref().child('APPDATA').child('AuditLogs').child(pLog).update({
+            Log: Log
+        });
+
+        typeof pCallback === 'function' && pCallback();
+    });
+}
+
+EVN_User.prototype.RemoveAuditLogEntries = function (pLog, pEntry, pCallback) {
+    var USER = this;
+    if (USER.HasPermission('Clear' + pLog + 'Log'))
+    firebase.database().ref().child('APPDATA').child('AuditLogs').child(pLog).once('value').then(function (snap) {
+        var Data = [];
+        if (typeof snap.val().Log != 'undefined') {
+            Data = snap.val().Log.split(' ');
+        } else {
+            return;
+        }
+        var OldLog = [];
+        var NewLog = "";
+        var Entries = [];
+
+        if (pEntry.constructor !== Array) {
+            Entries[0] = pEntry;
+        }
+        else {
+            Entries = pEntry;
+        }
+        if (Data.constructor !== Array) {
+            OldLog[0] = Data;  
+        }
+        else {
+            OldLog = Data;
+        }
+
+        /*for (var i = 0; i < Entries.length; i++) {
+            for (var j = 0; j < OldLog.length; j++) {
+                if (Entries[i] == OldLog[j]) {
+                    OldLog[j] = undefined;
+                }
+            }
+        }*/
+        
+        for (var i = 0; i < OldLog.length; i++) {
+            for (var j = 0; j < Entries.length; j++) {
+                if (Entries[j] == OldLog[i]) {
+                    OldLog[i] = undefined;
+                }
+            }
+            if (typeof OldLog[i] != 'undefined') {
+                NewLog += OldLog[i] + ' ';
+            }
+        }
+
+        if (NewLog[NewLog.length - 1] == ' ') {
+            NewLog = NewLog.slice(0, -1);
+        }
+        
+        if (NewLog == ' ' || NewLog == '') {
+            NewLog = null;
+        } 
+
+        firebase.database().ref().child('APPDATA').child('AuditLogs').child(pLog).update({
+            Log: NewLog
+        });
+
+        typeof pCallback === 'function' && pCallback();
+    });
+};
+
+EVN_User.prototype.ClearAuditLog = function (pLog, pCallback) {
+    var USER = this;
+    if (USER.HasPermission('ClearAll' + pLog + 'Log') || USER.HasPermission('All')) {
+        firebase.database().ref().child('APPDATA').child('AuditLogs').child(pLog).once('value').then(function (snap) {
+            if (typeof snap.val().Log != 'undefined') {
+                var Data = snap.val().Log.split(' ');
+                USER.RemoveAuditLogEntries('Master', Data);
+                firebase.database().ref().child('APPDATA').child('AuditLogs').child(pLog).update({
+                    Log: null
+                });
+            }
+            typeof pCallback === 'function' && pCallback();
+        });
+    }
 }
 
 EVN_User.prototype.UpdateLastSeen = function () {
@@ -180,7 +278,7 @@ EVN_User.prototype.UpdateUserInformation = function () {
         }
     }
 
-    USER.UpdateFirebaseEntry(UserData, function() {
+    USER.UpdateFirebaseEntry(UserData, function () {
         FirstNameInput.val(USER.mFirstName);
         LastNameInput.val(USER.mLastName);
         PhoneNumberInput.val(USER.mPhoneNumber);
@@ -263,38 +361,38 @@ EVN_User.prototype.SubmitFirstLogin = function (pUid, pCallback) {
 
 EVN_User.prototype.IsFirstLogin = function (pUid, pCallback) {
     var USER = this;
-        $('#first-login-modal').modal({
-            dismissible: false, // Modal can be dismissed by clicking outside of the modal
-            opacity: .5, // Opacity of modal background
-            inDuration: 300, // Transition in duration
-            outDuration: 200, // Transition out duration
-            startingTop: '4%', // Starting top style attribute
-            endingTop: '10%', // Ending top style attribute
-            ready: function(modal, trigger) { // Callback for Modal open. Modal and trigger parameters available.
-            },
-            complete: function() {
+    $('#first-login-modal').modal({
+        dismissible: false, // Modal can be dismissed by clicking outside of the modal
+        opacity: .5, // Opacity of modal background
+        inDuration: 300, // Transition in duration
+        outDuration: 200, // Transition out duration
+        startingTop: '4%', // Starting top style attribute
+        endingTop: '10%', // Ending top style attribute
+        ready: function (modal, trigger) { // Callback for Modal open. Modal and trigger parameters available.
+        },
+        complete: function () {
 
-            } // Callback for Modal close
-          }
-        );
+        } // Callback for Modal close
+    }
+    );
 
-        $('#first-login-submit').click(function() {
+    $('#first-login-submit').click(function () {
+        USER.SubmitFirstLogin(pUid, pCallback);
+    });
+
+    $('#FirstLoginForm').keypress(function (e) {
+        if (e.which == 13) {
             USER.SubmitFirstLogin(pUid, pCallback);
-        });
+            return false;
+        }
+    });
 
-        $('#FirstLoginForm').keypress(function (e) {
-            if (e.which == 13) {
-                USER.SubmitFirstLogin(pUid, pCallback);
-                return false;
-            }
-        });
+    $('#EmailField').val(firebase.auth().currentUser.email);
+    Materialize.updateTextFields();
 
-        $('#EmailField').val(firebase.auth().currentUser.email);
-        Materialize.updateTextFields();
+    $('#first-login-modal').modal('open');
 
-        $('#first-login-modal').modal('open');
-
-        //USERf.CreateFirebaseEntry(UserData, 'STAFF', pCallback);
+    //USERf.CreateFirebaseEntry(UserData, 'STAFF', pCallback);
 }
 
 EVN_User.prototype.Load = function (pCallback) {

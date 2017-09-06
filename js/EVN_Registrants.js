@@ -149,6 +149,17 @@ EVN_Registrants.prototype.ClearRegistrantLog = function (pID) {
                 });
             }
 
+            if (typeof snap.val().Log != 'undefined') {
+                EVN.mUser.RemoveAuditLogEntries('Registrants', snap.val().Log);
+                EVN.mUser.RemoveAuditLogEntries('Master', snap.val().Log);
+            }
+
+            var ActionLog = 'CLRREGISTRANTLOG%' + pID + '%' + SK.GetESTTimestamp();
+            EVN.mUser.AppendActionLog(ActionLog);
+            ActionLog += '%' + EVN.mUser.mUsername;
+            EVN.mUser.AppendAuditLog('Registrants', ActionLog);
+            EVN.mUser.AppendAuditLog('Master', ActionLog);
+
             firebase.database().ref().child('APPDATA').child('Registrants').child(pID).set({
                 Status: "NOT_ATTENDED",
             });
@@ -283,18 +294,22 @@ EVN_Registrants.prototype.Ban = function (pID) {
                     }
 
                     ActionLog = "BANNED%" + pID + "%" + Timestamp;
-                    EVN.mUser.AppendActionLog(ActionLog);
-
-                    //formatDate(Timestamp);
-                    //console.log(CurrentDate);
-                    firebase.database().ref().child('APPDATA').child('Registrants').child(ID).update({
-                        Status: "BANNED",
-                        Log: Update
+                    EVN.mUser.AppendActionLog(ActionLog, function() {
+                        ActionLog += '%' + EVN.mUser.mUsername;
+                        EVN.mUser.AppendAuditLog('Registrants', ActionLog, EVN.mUser.AppendAuditLog('Master', ActionLog, function () {
+                            //formatDate(Timestamp);
+                            //console.log(CurrentDate);
+                            firebase.database().ref().child('APPDATA').child('Registrants').child(ID).update({
+                                Status: "BANNED",
+                                Log: Update
+                            });
+    
+                            Materialize.toast(pID + " was successfully banned", 4000, "toast-fix");
+                            console.log("Successfully banned " + pID);
+                            location.reload();
+                        }));
                     });
                 });
-                Materialize.toast(pID + " was successfully banned", 4000, "toast-fix");
-                console.log("Successfully banned " + pID);
-                location.reload();
             });
             $('#warning-modal-title').html('Ban Warning');
             $("#warning-modal-span").html('ban ' + pID);
@@ -325,18 +340,22 @@ EVN_Registrants.prototype.Unban = function (pID) {
                     }
 
                     ActionLog = "UNBANNED%" + pID + "%" + Timestamp;
-                    EVN.mUser.AppendActionLog(ActionLog);
-
-                    //formatDate(Timestamp);
-                    //console.log(CurrentDate);
-                    firebase.database().ref().child('APPDATA').child('Registrants').child(ID).update({
-                        Status: "NOT_ATTENDED",
-                        Log: Update
+                    EVN.mUser.AppendActionLog(ActionLog, function () {
+                        ActionLog += '%' + EVN.mUser.mUsername;
+                        EVN.mUser.AppendAuditLog('Registrants', ActionLog, EVN.mUser.AppendAuditLog('Master', ActionLog, function () {
+                            //formatDate(Timestamp);
+                            //console.log(CurrentDate);
+                            firebase.database().ref().child('APPDATA').child('Registrants').child(ID).update({
+                                Status: "NOT_ATTENDED",
+                                Log: Update
+                            });
+    
+                            Materialize.toast(pID + " was successfully unbanned", 4000, "toast-fix");
+                            console.log("Successfully unbanned " + pID);
+                            location.reload();
+                        }));
                     });
                 });
-                Materialize.toast(pID + " was successfully unbanned", 4000, "toast-fix");
-                console.log("Successfully unbanned " + pID);
-                location.reload();
             });
             $('#warning-modal-title').html('Unban Warning');
             $("#warning-modal-span").html('unban ' + pID);
@@ -365,6 +384,9 @@ EVN_Registrants.prototype.CheckIn = function (pID) {
 
             ActionLog = "CHECKIN%" + pID + "%" + Timestamp;
             EVN.mUser.AppendActionLog(ActionLog);
+            ActionLog += '%' + EVN.mUser.mUsername;
+            EVN.mUser.AppendAuditLog('Registrants', ActionLog);
+            EVN.mUser.AppendAuditLog('Master', ActionLog);
 
             //formatDate(Timestamp);
             //console.log(CurrentDate);
@@ -402,6 +424,9 @@ EVN_Registrants.prototype.CheckOut = function (pID) {
 
                     ActionLog = "CHECKOUT%" + pID + "%" + Timestamp;
                     EVN.mUser.AppendActionLog(ActionLog);
+                    ActionLog += '%' + EVN.mUser.mUsername;
+                    EVN.mUser.AppendAuditLog('Registrants', ActionLog);
+                    EVN.mUser.AppendAuditLog('Master', ActionLog);
 
                     //formatDate(Timestamp);
                     //console.log(CurrentDate);
@@ -756,6 +781,8 @@ EVN_Registrants.prototype.HandleData = function (pData) {
             }
         }
 
+        // jQuery Plugin Initialization
+
         var IDs = Object.keys(EVN.mStatus);
 
         for (var i = 0; i < IDs.length; i++) {
@@ -793,7 +820,6 @@ EVN_Registrants.prototype.HandleData = function (pData) {
             });
         }
 
-        // jQuery Plugin Initialization
         $('.dropdown-button').dropdown({
             inDuration: 300,
             outDuration: 225,
@@ -891,6 +917,26 @@ EVN_Registrants.prototype.LoadContent = function (pAPP_ID, pSECRET) {
                                 console.log("Successfully checked in " + ID);
                             });
                         }
+                        /*if (snap.val()[ID].Status == 'BANNED') {
+                            ButtonID.addclass('banned disabled');
+                            ButtonID.removeClass('check-in checked-in waves-effect waves-teal');
+                            ButtonID.html('BANNED');
+                            if (EVN.mStatus[ID].Status == 'CHECKED_IN') {
+                                EVN.mTotalAttended--;
+                                $('.totals-checked-in').each(function () {
+                                    $(this).html('Checked In: ' + EVN.mTotalAttended);
+                                });
+                            }
+                            EVN.mStatus[ID].Status = snap.val()[ID].Status;
+                            ButtonID.unbind("click");
+                            EVN.mTotalRegistrants++;
+                            $('.totals-registrants').each(function () {
+                                $(this).html('Registrants: ' + EVN.mTotalAttended);
+                            });
+                            EVN.mTotalBanned++;
+
+                            
+                        }*/
                     }
                 }
             }

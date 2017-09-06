@@ -29,6 +29,11 @@ EVN_Settings.prototype.ClearAllRegistrantsLog = function () {
                     Status: "NOT_ATTENDED",
                 });
             }
+            var ActionLog = 'CLRREGISTRANTLOG%ALL%' + SK.GetESTTimestamp();
+            EVN.mUser.AppendActionLog(ActionLog);
+            ActionLog += '%' + EVN.mUser.mUsername;
+            EVN.mUser.AppendAuditLog(ActionLog);
+            EVN.mUser.ClearAuditLog('Registrants');
             Materialize.toast("Successfully cleared logs for all registrants", 4000, "toast-fix");
             console.log('Successfully cleared logs for all registrants');
         });
