@@ -150,8 +150,20 @@ EVN_Registrants.prototype.ClearRegistrantLog = function (pID) {
             }
 
             if (typeof snap.val().Log != 'undefined') {
-                EVN.mUser.RemoveAuditLogEntries('Registrants', snap.val().Log);
-                EVN.mUser.RemoveAuditLogEntries('Master', snap.val().Log);
+                var ClearEntries = snap.val().Log;
+                var Temp = "";
+                ClearEntries = ClearEntries.split(' ');
+                if (ClearEntries.constructor !== Array) {
+                    ClearEntries[0] = ClearEntries;
+                }
+                for (var i = 0; i < ClearEntries.length; i++) {
+                    Temp = ClearEntries[i].split('%');
+                    Temp.splice(1, 0, pID);
+                    ClearEntries[i] = Temp.join('%');
+                }
+                ClearEntries = ClearEntries.join(' ');
+                EVN.mUser.RemoveAuditLogEntries('Registrants', ClearEntries);
+                EVN.mUser.RemoveAuditLogEntries('Master', ClearEntries);
             }
 
             var ActionLog = 'CLRREGISTRANTLOG%' + pID + '%' + SK.GetESTTimestamp();
@@ -854,8 +866,8 @@ EVN_Registrants.prototype.LoadLogsTab = function (pCallback) {
             RegistrantsLogEntry = RegistrantsLogEntry.split('%');
             RegistrantsLog += "<tr><td>" + RegistrantsLogEntry[0] + "</td><td>" + RegistrantsLogEntry[1] + "</td><td>" + RegistrantsLogEntry[2] + "</td><td>" + RegistrantsLogEntry[3] + "</td></tr>";
         }
-        $('#check-in-out-logs-table-body').html(RegistrantsLog);
     }
+    $('#check-in-out-logs-table-body').html(RegistrantsLog);
     typeof pCallback === 'function' && pCallback();
     });
 }

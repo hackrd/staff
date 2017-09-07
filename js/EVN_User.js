@@ -186,7 +186,7 @@ EVN_User.prototype.RemoveAuditLogEntries = function (pLog, pEntry, pCallback) {
             var OldLog = [];
             var NewLog = "";
             var Entries = [];
-
+            pEntry = pEntry.split(' ');
             if (pEntry.constructor !== Array) {
                 Entries[0] = pEntry;
             }
@@ -230,8 +230,6 @@ EVN_User.prototype.RemoveAuditLogEntries = function (pLog, pEntry, pCallback) {
             firebase.database().ref().child('APPDATA').child('AuditLogs').child(pLog).update({
                 Log: NewLog
             });
-
-            console.log(NewLog);
 
             typeof pCallback === 'function' && pCallback();
         });

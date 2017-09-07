@@ -33,8 +33,20 @@ EVN_Staff.prototype.ClearStaffLog = function (pUid) {
             }
 
             if (typeof snap.val().Log != 'undefined') {
-                EVN.mUser.RemoveAuditLogEntries('Staff', snap.val().Log);
-                EVN.mUser.RemoveAuditLogEntries('Master', snap.val().Log);
+                var ClearEntries = snap.val().Log;
+                var Temp = "";
+                ClearEntries = ClearEntries.split(' ');
+                if (ClearEntries.constructor !== Array) {
+                    ClearEntries[0] = ClearEntries;
+                }
+                for (var i = 0; i < ClearEntries.length; i++) {
+                    Temp = ClearEntries[i].split('%');
+                    Temp.splice(1, 0, pUid);
+                    ClearEntries[i] = Temp.join('%');
+                }
+                ClearEntries = ClearEntries.join(' ');
+                EVN.mUser.RemoveAuditLogEntries('Staff', ClearEntries);
+                EVN.mUser.RemoveAuditLogEntries('Master', ClearEntries);
             }
 
             var ActionLog = 'CLRSTAFFLOG%' + pUid + '%' + SK.GetESTTimestamp();
@@ -141,7 +153,7 @@ EVN_Staff.prototype.CheckOut = function (pUid) {
                         Update = "CHECKOUT%" + Timestamp + "%" + EVN.mUser.mUsername;
                     }
 
-                    ActionLog = "CHECKIN%" + pUid + "%" + Timestamp;
+                    ActionLog = "CHECKOUT%" + pUid + "%" + Timestamp;
                     EVN.mUser.AppendActionLog(ActionLog);
                     ActionLog += '%' + EVN.mUser.mUsername;
                     EVN.mUser.AppendAuditLog('Staff', ActionLog);
@@ -559,6 +571,8 @@ EVN_Staff.prototype.LoadLogsTab = function (pCallback) {
     var StaffLog = "";
     var StaffLogData = "";
 
+    console.log(Data);
+
     if (typeof Data != 'undefined') {
         StaffLogData = Data;
         StaffLogData = StaffLogData.split(' ');
@@ -569,8 +583,8 @@ EVN_Staff.prototype.LoadLogsTab = function (pCallback) {
             StaffLogEntry = StaffLogEntry.split('%');
             StaffLog += "<tr><td>" + StaffLogEntry[0] + "</td><td>" + StaffLogEntry[1] + "</td><td>" + StaffLogEntry[2] + "</td><td>" + StaffLogEntry[3] + "</td></tr>";
         }
-        $('#check-in-out-logs-table-body').html(StaffLog);
     }
+    $('#check-in-out-logs-table-body').html(StaffLog);
     if (EVN.mUser.HasPermission('ViewActionLog') || EVN.mUser.HasPermission('All')) {
         Data = snap.val().StaffAction.Log;
         var ActionLog = "";
@@ -586,8 +600,8 @@ EVN_Staff.prototype.LoadLogsTab = function (pCallback) {
                 ActionLogEntry = ActionLogEntry.split('%');
                 ActionLog += "<tr><td>" + ActionLogEntry[0] + "</td><td>" + ActionLogEntry[1] + "</td><td>" + ActionLogEntry[2] + "</td><td>" + ActionLogEntry[3] + "</td></tr>";
             }
-            $('#action-logs-table-body').html(ActionLog);
         }
+        $('#action-logs-table-body').html(ActionLog);
         $('#action-logs-list-tab').removeClass('disabled');
     } else {
         $('#action-logs-list').remove();
