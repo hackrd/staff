@@ -31,7 +31,7 @@ var EVN_User = function () {
 }
 
 EVN_User.prototype.IsSystemUpdate = function () {
-    var ModalHtml = "<div id='system-update-modal' class=\"modal\"><div class=\"modal-content\"><h4><i class=\"material-icons small\">new_releases</i>   System Update</h4><p>A new system update has been released! Please refresh your page to get the latest content.</p></div><div class=\"modal-footer\"><a href=\"#!\" class=\"modal-action modal-close waves-effect waves-grey btn-flat \">Cancel</a><a id=\"\" href=\"#!\" class=\"modal-action modal-close waves-effect waves-green btn-flat \" onclick=\"location.reload();\">Update</a></div></div>";
+    var ModalHtml = "<div id='system-update-modal' class=\"modal\"><div class=\"modal-content\"><h4><i class=\"material-icons small\">new_releases</i>   Version Update</h4><p>A new system update has been released! Please refresh your page to get the latest content.</p></div><div class=\"modal-footer\"><a href=\"#!\" class=\"modal-action modal-close waves-effect waves-grey btn-flat \">Cancel</a><a id=\"\" href=\"#!\" class=\"modal-action modal-close waves-effect waves-green btn-flat \" onclick=\"location.reload();\">Update</a></div></div>";
     $('#content').html($('#content').html() + ModalHtml);
     $('#system-update-modal').modal({
         dismissible: false, // Modal can be dismissed by clicking outside of the modal
@@ -70,6 +70,44 @@ EVN_User.prototype.HasPermission = function (pPermission) {
     }
     else {
         return false;
+    }
+}
+
+EVN_User.prototype.ModifyPermission = function (pUid, pPermission, pValue) {
+    var USER = this;
+    if (USER.HasPermission('EditPermissions') || USER.HasPermission('All')) {
+
+        firebase.database().ref().child('APPDATA').child('Users').child(pUid).child('Permissions').update({
+            [pPermission]: pValue
+        });
+        if (pUid == USER.mUid) {
+            USER.mPermissions[pPermission] = pValue;
+        }
+
+    }
+}
+
+EVN_User.prototype.ModifyAccountType = function (pUid, pType) {
+    var USER = this;
+    if (USER.HasPermission('ChangeAccountType') || USER.HasPermission('All')) {
+        firebase.database().ref().child('Permissions').once('value').then(function (snap) {
+            var PermissionIndex = Object.keys(snap.val().INDEX);
+            firebase.database().ref().child('APPDATA').child('Users').child(pUid).update({
+                Type: pType,
+                Permissions: null
+            });
+            if (pUid == USER.mUid) {
+                USER.mType = pType;
+            }
+            for (var i = 0; i < PermissionIndex.length; i++) {
+                if (snap.val()[pType][PermissionIndex[i]] == true) {
+                    $('#permission-toggle-' + PermissionIndex[i] + ' input').prop('checked', true);
+                }
+                else {
+                    $('#permission-toggle-' + PermissionIndex[i] + ' input').prop('checked', false);
+                }
+            }
+        });
     }
 }
 
@@ -480,6 +518,10 @@ EVN_User.prototype.Load = function (pCallback) {
                     pCallback();
                     //console.log(USER);
                 });
+
+                if (USER.mType == 'DISABLED') {
+                    LogOutUser();
+                }
             }
             else {
                 USER.IsFirstLogin(Uid, pCallback);

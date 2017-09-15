@@ -182,22 +182,25 @@ Sean Kee <skee66499@gmail.com>
     </div>
 
     <!-- Permissions Modal  -->
-    <div id="profile-modal" class="modal modal-fixed-footer">
+    <div id="permissions-modal" class="modal modal-fixed-footer">
       <div class="modal-content">
-        <h4 style="width: 100%;"><span style="float: left;">Registrant Profile</span><span id="profile-flags"></span></h4>
-        <p id="profile-content"></p>
-        <h5><span style="float: left;">Log </span><a id="clear-log-btn" href="#!" style="float: right" class="red-btn waves-effect waves-green btn-flat right">CLEAR LOG</a>
-        </h5>
-        <table id="profile-check-in-out-log-table" class="striped ">
+        <h4 style="width: 100%;"><span>Staff Permissions</span><span id="permissions-flags"></span></h4>
+        <h5><span>Type</span>
+        <div id="permissions-type" style="width: 25%;">
+            <select>
+            </select>
+        </div>
+      </h5>
+        <h5><span style="float: left;">Individual Permissions</span></h5>
+        <table id="individual-permissions-table" class="striped ">
           <thead>
             <tr>
-              <th id="action">Action</th>
-              <th id="timestamp">Timestamp</th>
-              <th id="verified_by">Verified By</th>
-              <th></th>
+              <th id="permission-name">Name</th>
+              <th id="permission-description">Description</th>
+              <th id="permission-toggle">Value</th>
             </tr>
           </thead>
-          <tbody id="profile-check-in-out-log-table-body">
+          <tbody id="individual-permissions-table-body">
           </tbody>
         </table>
       </div>

@@ -386,6 +386,71 @@ EVN_Staff.prototype.ViewActionLog = function (pUid) {
         }
 }
 
+EVN_Staff.prototype.ViewPermissions = function(pUid) {
+    var EVN = this;
+    if (EVN.mUser.HasPermission('EditPermissions') || EVN.mUser.HasPermission('All')) {
+        USERDATABASE.child(pUid).once('value').then(function (snap) {
+            var UserType = snap.val().Type;
+            var SpecialPermissions = [];
+            if (typeof snap.val().Permissions != 'undefined') {
+                SpecialPermissions = snap.val().Permissions;
+            }
+            var Permission = "";
+            firebase.database().ref().child('Permissions').once('value').then(function (snap) {
+                var TypeIndex = Object.keys(snap.val());
+                for (var i = 0; i < TypeIndex.length; i++) {
+                    if (TypeIndex[i] != 'INDEX') {
+                        if (TypeIndex[i] == UserType) {
+                            $('#permission-type-option-' + TypeIndex[i]).attr('selected', true);
+                        } else {
+                            $('#permission-type-option-' + TypeIndex[i]).attr('selected', false);
+                        }
+                    }
+                }
+    
+                $('#permissions-type select').material_select();
+
+                var PermissionIndex = Object.keys(snap.val().INDEX);
+                if (EVN.mUser.HasPermission('ChangeAccountType') || EVN.mUser.HasPermission('All')) {
+                    $('#permissions-type select').on('change', function() {
+                        EVN.mUser.ModifyAccountType(pUid, this.value);
+                    });
+                }
+                else {
+                    $('#permissions-type select').off();
+                }
+                for (var i = 0; i < PermissionIndex.length; i++) {
+                    if (typeof SpecialPermissions[PermissionIndex[i]] != 'undefined') {
+                        if (SpecialPermissions[PermissionIndex[i]] == true) {
+                            $('#permission-toggle-' + PermissionIndex[i] + ' input').prop('checked', true);
+                        }
+                        else {
+                            $('#permission-toggle-' + PermissionIndex[i] + ' input').prop('checked', false);
+                        }
+                    }
+                    else {
+                        if (snap.val()[UserType][PermissionIndex[i]] == true) {
+                            $('#permission-toggle-' + PermissionIndex[i] + ' input').prop('checked', true);
+                        }
+                        else {
+                            $('#permission-toggle-' + PermissionIndex[i] + ' input').prop('checked', false);
+                        }
+                    }
+
+                    $('#permission-toggle-' + PermissionIndex[i] + ' input').unbind('click');
+                    $('#permission-toggle-' + PermissionIndex[i] + ' input').click(function () {
+                        Permission = $(event.target).parents()[2].id;
+                        Permission = Permission.split('-');
+                        Permission = Permission.pop();
+                        EVN.mUser.ModifyPermission(pUid, Permission, $('#permission-toggle-' + Permission + ' input').prop('checked') ? true : false);
+                    });
+                }
+            });
+        });
+        $('#permissions-modal').modal('open');
+    }
+}
+
 EVN_Staff.prototype.LoadDatabaseListener = function () {
     var EVN = this;
     USERDATABASE.on('value', snap => {
@@ -479,7 +544,7 @@ EVN_Staff.prototype.FillStaffListTable = function (pCallback) {
                 $('#clear-action-log-btn').remove();
             }
             if (EVN.mUser.HasPermission('EditPermissions') || EVN.mUser.HasPermission('All')) {
-                More += "<li class=\"divider\"></li><li><a id=\"more-permissions-" + Uid + "\" class=\"more-permissions-btn\" href=\"#!\" onclick=\"Materialize.toast('Sorry, this feature is not available yet', 4000, 'toast-fix')\">Permissions</a></li><li class=\"divider\"></li>";
+                More += "<li class=\"divider\"></li><li><a id=\"more-permissions-" + Uid + "\" class=\"more-permissions-btn\" href=\"#!\">Permissions</a></li><li class=\"divider\"></li>";
             }
             if (EVN.mUser.HasPermission('CheckOutStaff') || EVN.mUser.HasPermission('All')) {
                 More += "<li><a id=\"more-check-out-" + Uid + "\" class=\"more-check-out-btn\" href=\"#!\">Check Out</a></li>";
@@ -571,8 +636,6 @@ EVN_Staff.prototype.LoadLogsTab = function (pCallback) {
     var StaffLog = "";
     var StaffLogData = "";
 
-    console.log(Data);
-
     if (typeof Data != 'undefined') {
         StaffLogData = Data;
         StaffLogData = StaffLogData.split(' ');
@@ -610,6 +673,43 @@ EVN_Staff.prototype.LoadLogsTab = function (pCallback) {
     });
 }
 
+EVN_Staff.prototype.LoadPermissions = function (pCallback) {
+    var EVN = this;
+
+    firebase.database().ref().child('Permissions').once('value').then(function (snap) {
+        if (EVN.mUser.HasPermission('ChangeAccountType') || EVN.mUser.HasPermission('All')) {
+            var Keys = Object.keys(snap.val());
+            var Entry = [];
+            for (var i = 0; i < Keys.length; i++) {
+                if (Keys[i] != 'INDEX') {
+                    if (Keys[i] == EVN.mUser.mType) {
+                        Entry.push('<option id="permission-type-option-' + Keys[i] + '" val="' + Keys[i] + '" selected>' + Keys[i] + '</option>');
+                    } else {
+                        Entry.push('<option id="permission-type-option-' + Keys[i] + '" val="' + Keys[i] + '">' + Keys[i] + '</option>');
+                    }
+                }
+            }
+
+            $('#permissions-type select').html(Entry);
+            $('#permissions-type select').material_select();
+        } else {
+            $('#permissions-type select').attr('disabled', true);
+            $('#permissions-type select').html('<option value="" disabled selected>' + EVN.mUser.mType + '</option>');
+            $('#permissions-type select').material_select();
+        }
+
+        // Load permissions
+        var PermissionIndex = Object.keys(snap.val().INDEX);
+        var PermissionsTableContent = [];
+        for (var i = 0; i < PermissionIndex.length; i++) {
+            PermissionsTableContent.push("<tr id='permission_" + PermissionIndex[i] + "'" + "><td>" + PermissionIndex[i] + "</td><td>" + snap.val().INDEX[PermissionIndex[i]] +"</td><td id='permission-toggle-" + PermissionIndex[i] + "'><div class='switch'><label>Off<input type='checkbox'><span class='lever'></span>On</label></div></tr>");
+        }
+        $('#individual-permissions-table-body').html(PermissionsTableContent);
+    });
+
+    typeof pCallback === 'function' && pCallback();
+}
+
 EVN_Staff.prototype.LoadContent = function () {
     var EVN = this;
     var Hash = window.location.hash;
@@ -622,6 +722,12 @@ EVN_Staff.prototype.LoadContent = function () {
         });
 
         EVN.LoadLogsTab($('.logs-tab').removeClass('disabled'));
+
+        if (EVN.mUser.HasPermission('EditPermissions') || EVN.mUser.HasPermission('All')) {
+            EVN.LoadPermissions();
+        } else {
+            $('#permissions-modal').remove();
+        }
 
         if (EVN.mUser.HasPermission('ViewStaffStatistics') || EVN.mUser.HasPermission('All')) {
             // Stats panel
