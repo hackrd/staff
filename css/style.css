@@ -330,3 +330,35 @@ nav {
     max-width: 150px;
     min-width: 110px;
 }
+
+@media only screen and (max-width: 992px) {
+    html {
+        font-size: 1rem !important;
+    }
+}
+
+/* START SK Context Menu */
+
+.SK_ctx-menu {
+    display: none;
+    z-index: 100000;
+    position: absolute;
+    overflow: hidden;
+    border: 1px solid #CCC;
+    white-space: nowrap;
+    font-family: sans-serif;
+    background: #FFF;
+    color: #333;
+    border-radius: 5px;
+}
+
+.SK_ctx-menu li {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.SK_ctx-menu li:hover {
+    background-color: #DEF;
+}
+
+/* END Custom Context Menu */

@@ -26,8 +26,51 @@ var EVN_Registrants = function () {
     this.mUser = new EVN_User();
 }
 
-EVN_Registrants.prototype.CreateRaffle = function (pRaffleName) {
+// Open SK_ctx-menu when profile-flags is right clicked
+//$(document).bind("contextmenu", function (event) {
+$('#profile-flags').bind("contextmenu", function (event) {   
+    // Avoid the real one
+    event.preventDefault();
+    
+    // Show contextmenu
+    $(".SK_ctx-menu").finish().toggle(100).
+    
+    // In the right position (the mouse)
+    css({
+        top: event.pageY + "px",
+        left: event.pageX + "px"
+    });
+});
 
+
+// If the document is clicked somewhere
+$(document).bind("mousedown", function (e) {
+    
+    // If the clicked element is not the menu
+    if (!$(e.target).parents(".SK_ctx-menu").length > 0) {
+        
+        // Hide it
+        $(".SK_ctx-menu").hide(100);
+    }
+});
+
+
+/*// If the menu element is clicked
+$(".SK_ctx-menu li").click(function(){
+    
+    // This is the triggered action name
+    switch($(this).attr("data-action")) {
+
+        case "first": alert("first"); break;
+    }
+  
+    // Hide it AFTER the action was triggered
+    $(".SK_ctx-menu").hide(100);
+});*/
+
+
+EVN_Registrants.prototype.CreateRaffle = function (pRaffleName) {
+    
 }
 
 EVN_Registrants.prototype.DrawRaffle = function (pRaffleName) {
@@ -38,19 +81,19 @@ EVN_Registrants.prototype.JSONToCSV = function (pData) {
     if (pData.length == 0) {
         return '';
     }
-
+    
     var Keys = Object.keys(pData[0]);
-
+    
     for (var i = 0; i < Keys.length; i++) {
         //if pData[i]
     }
 
     var ColumnDelimiter = ',';
     var LineDelimiter = '\n';
-
+    
     var CSVColumnHeader = Keys.join(ColumnDelimiter);
     var CSVString = CSVColumnHeader + LineDelimiter;
-
+    
     for (var i = 0; i < pData.length; i++) {
         for (var j = 0; j < Keys.length; j++) {
             if (pData[i][Keys[j]] != null) {
@@ -64,7 +107,7 @@ EVN_Registrants.prototype.JSONToCSV = function (pData) {
         }
         CSVString += LineDelimiter;
     }
-
+    
     return encodeURIComponent(CSVString);
 }
 
@@ -73,7 +116,7 @@ EVN_Registrants.prototype.ExportRegistrants = function (pFileType) {
     // check for permissions
     if (EVN.mUser.HasPermission('ExportRegistrants') || EVN.mUser.HasPermission('All')) {
         Materialize.toast('Preparing file for download...', 4000, 'toast-fix');
-
+        
         firebase.database().ref().child('APPDATA').child('Registrants').once('value').then(function (snap) {
             // Prepare data
             var JSONData = [];
@@ -95,9 +138,9 @@ EVN_Registrants.prototype.ExportRegistrants = function (pFileType) {
 
             var Timestamp = SK.GetDate();
             var FileName = Timestamp + "_Hack River Dell Registrants";
-
+            
             var DataURI = "";
-
+            
             // Created proper download
             if (pFileType == 'CSV') {
                 FileName += ".csv";
@@ -113,7 +156,7 @@ EVN_Registrants.prototype.ExportRegistrants = function (pFileType) {
                     return;
                 }
             }
-
+            
             var TempLinkElement = document.createElement('a');
             TempLinkElement.setAttribute('href', DataURI);
             TempLinkElement.setAttribute('download', FileName);
@@ -148,7 +191,7 @@ EVN_Registrants.prototype.ClearRegistrantLog = function (pID) {
                     $(this).html('Checked In: ' + EVN.mTotalAttended);
                 });
             }
-
+            
             if (typeof snap.val().Log != 'undefined') {
                 var ClearEntries = snap.val().Log;
                 var Temp = "";
@@ -165,13 +208,13 @@ EVN_Registrants.prototype.ClearRegistrantLog = function (pID) {
                 EVN.mUser.RemoveAuditLogEntries('Registrants', ClearEntries);
                 EVN.mUser.RemoveAuditLogEntries('Master', ClearEntries);
             }
-
+            
             var ActionLog = 'CLRREGISTRANTLOG%' + pID + '%' + SK.GetESTTimestamp();
             EVN.mUser.AppendActionLog(ActionLog);
             ActionLog += '%' + EVN.mUser.mUsername;
             EVN.mUser.AppendAuditLog('Registrants', ActionLog);
             EVN.mUser.AppendAuditLog('Master', ActionLog);
-
+            
             firebase.database().ref().child('APPDATA').child('Registrants').child(pID).set({
                 Status: "NOT_ATTENDED",
             });
@@ -196,10 +239,10 @@ EVN_Registrants.prototype.ViewProfile = function (pID) {
         var ProfileInfo = "";
         var CheckInOutLog = "";
         var CheckInOutLogData = "";
-
+        
         firebase.database().ref().child('APPDATA').child('Registrants').child(pID).once('value').then(function (snap) {
             ProfileInfo = "<span class='bold'>ID: </span>" + ID + "<br /><span class='bold'>Status: </span><span id='profile-status'>" + snap.val().Status + "</span><br /><span class='bold'>First Name: </span>" + Data.first_name + "<br /><span class='bold'>Last Name: </span>" + Data.last_name + "<br /><span class='bold'>DOB: </span>" + Data.date_of_birth + "<br /><span class='bold'>Gender: </span>" + Data.gender + "<br /><span class='bold'>Email: </span>" + Data.email + "<br /><span class='bold'>Phone #: </span>" + Data.phone_number + "<br /><span class='bold'>Shirt Size: </span>" + Data.shirt_size + "<br /><span class='bold'>School: </span>" + Data.school.name + "<br /><span class='bold'>Level of Study: </span>" + Data.level_of_study + "<br /><span class='bold'>Dietary Restrictions: </span>" + Data.dietary_restrictions + "<br /><span class='bold'>Special Needs: </span>" + Data.special_needs + "<br /><span class='bold'>Last Updated: </span>" + Data.updated_at;
-
+            
             // Flags
             $('#profile-flags').html('');
             if (typeof snap.val().Flags != 'undefined') {
@@ -207,9 +250,28 @@ EVN_Registrants.prototype.ViewProfile = function (pID) {
                     $('#profile-flags').html('<div class="profile-redflag">INELIGIBLE</div>');
                 }
             }
+            
+            if (EVN.mUser.HasPermission('EditRegistrantFlags') || EVN.mUser.HasPermission('All')) {
+                // If the menu element is clicked
+                $('.SK_ctx-menu li').unbind('click');
+                $(".SK_ctx-menu li").click(function () {
 
+                    // This is the triggered action name
+                    switch ($(this).attr("data-action")) {
+
+                        case "make-eligible":
+                            EVN.SetFlags(pID, 'ELIGIBLE');
+                            location.reload();
+                            break;
+                    }
+
+                    // Hide it AFTER the action was triggered
+                    $(".SK_ctx-menu").hide(100);
+                });
+            }
+            
             // Ban/Unban button
-
+            
             if (snap.val().Status == "BANNED" && (EVN.mUser.HasPermission('UnbanRegistrants') || EVN.mUser.HasPermission('All'))) {
                 $('#ban-btn').hide();
                 $('#unban-btn').show();
@@ -675,8 +737,16 @@ EVN_Registrants.prototype.HandleData = function (pData) {
             ID = "ID_" + Data.id;
             // Check for ineligiblity
             if (EVN.mData[i].level_of_study != 'High School / Secondary School') {
-                IsEligible = false;
-                EVN.SetFlags(ID, 'INELIGIBLE');
+                if (typeof snap.val()[ID] != 'undefined') {
+                    if (snap.val()[ID].Flags != 'ELIGIBLE') {
+                        IsEligible = false;
+                        EVN.SetFlags(ID, 'INELIGIBLE');
+                    }
+                }
+                else {
+                    IsEligible = false;
+                    EVN.SetFlags(ID, 'INELIGIBLE');
+                }
             }
 
             EVN.mMyMLHReference[ID] = i;
@@ -713,9 +783,9 @@ EVN_Registrants.prototype.HandleData = function (pData) {
             }
 
             if (IsEligible) {
-                Entry = "<tr id=\"registrant_" + ID + "\"><td>" + Data.id + "</td><td>" + Data.last_name + "</td><td>" + Data.first_name + "</td><td>" + Data.email + "</td><td>" + Data.phone_number + "</td><td>" + Data.shirt_size + "</td><td>" + Data.dietary_restrictions + "</td><td>" + Data.updated_at + "</td><td class=\"status-column center\">" + Status + "</td><td>" + More + "</td></tr>";
+                Entry = "<tr id=\"registrant_" + ID + "\"><td>" + Data.id + "</td><td>" + Data.last_name + "</td><td>" + Data.first_name + "</td><td class='hide-on-med-and-down'>" + Data.email + "</td><td class='hide-on-med-and-down'>" + Data.phone_number + "</td><td class='hide-on-med-and-down'>" + Data.shirt_size + "</td><td class='hide-on-med-and-down'>" + Data.dietary_restrictions + "</td><td class='hide-on-med-and-down'>" + Data.updated_at + "</td><td class=\"status-column center\">" + Status + "</td><td>" + More + "</td></tr>";
             } else {
-                Entry = "<tr id=\"registrant_" + ID + "\" class='redflag'><td>" + Data.id + "</td><td>" + Data.last_name + "</td><td>" + Data.first_name + "</td><td>" + Data.email + "</td><td>" + Data.phone_number + "</td><td>" + Data.shirt_size + "</td><td>" + Data.dietary_restrictions + "</td><td>" + Data.updated_at + "</td><td class=\"status-column center\">" + Status + "</td><td>" + More + "</td></tr>";
+                Entry = "<tr id=\"registrant_" + ID + "\" class='redflag'><td>" + Data.id + "</td><td>" + Data.last_name + "</td><td>" + Data.first_name + "</td><td class='hide-on-med-and-down'>" + Data.email + "</td><td class='hide-on-med-and-down'>" + Data.phone_number + "</td><td class='hide-on-med-and-down'>" + Data.shirt_size + "</td><td class='hide-on-med-and-down'>" + Data.dietary_restrictions + "</td><td class='hide-on-med-and-down'>" + Data.updated_at + "</td><td class=\"status-column center\">" + Status + "</td><td>" + More + "</td></tr>";
             }
             if (typeof snap.val()[ID] != 'undefined' && snap.val()[ID].Status == "BANNED") {
                 BannedTableContent.push(Entry);
