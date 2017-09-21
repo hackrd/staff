@@ -74,7 +74,19 @@ EVN_Staff.prototype.ClearActionLog = function (pUid) {
     if (EVN.mUser.HasPermission('ClearActionLog') || EVN.mUser.HasPermission('All')) {
         USERDATABASE.child(pUid).once('value').then(function (snap) {
             if (typeof snap.val().ActionLog != 'undefined') {
-                EVN.mUser.RemoveAuditLogEntries('StaffAction', snap.val().Log);
+                var ClearEntries = snap.val().ActionLog;
+                var Temp = "";
+                ClearEntries = ClearEntries.split(' ');
+                if (ClearEntries.constructor !== Array) {
+                    ClearEntries[0] = ClearEntries;
+                }
+                for (var i = 0; i < ClearEntries.length; i++) {
+                    Temp = ClearEntries[i].split('%');
+                    Temp.push(snap.val().Username);
+                    ClearEntries[i] = Temp.join('%');
+                }
+                ClearEntries = ClearEntries.join(' ');
+                EVN.mUser.RemoveAuditLogEntries('StaffAction', ClearEntries);
             }
 
             var ActionLog = 'CLRSTAFFLOG%' + pUid + '%' + SK.GetESTTimestamp();
@@ -83,14 +95,11 @@ EVN_Staff.prototype.ClearActionLog = function (pUid) {
             EVN.mUser.AppendAuditLog('StaffAction', ActionLog);
 
             USERDATABASE.child(pUid).update({
-                Status: "NOT_ATTENDED",
-                Log: null,
-                TotalTime: null
+                ActionLog: null
             });
-            $('#profile-check-in-out-log-table-body').html('');
-            $('#profile-status').html('NOT_ATTENDED');
-            Materialize.toast("Successfully cleared log for " + '[' + EVN.mData[pUid].Type + '] ' + EVN.mData[pUid].FirstName + ' ' + EVN.mData[pUid].LastName, 4000, "toast-fix");
-            console.log("Successfully cleared log for " + pUid);
+            $('#action-log-table-body').html('');
+            Materialize.toast("Successfully cleared action log for " + '[' + EVN.mData[pUid].Type + '] ' + EVN.mData[pUid].FirstName + ' ' + EVN.mData[pUid].LastName, 4000, "toast-fix");
+            console.log("Successfully cleared action log for " + pUid);
             $('#clear-log-btn').hide();
         });
     }
