@@ -1,4 +1,6 @@
 User-agent: *
+Disallow: /css/*
 Disallow: /index.html
 Disallow: /registrants.html
 Disallow: /settings.html
+Disallow: /staff.html
