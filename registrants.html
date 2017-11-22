@@ -442,7 +442,21 @@ Sean Kee <skee66499@gmail.com>
               <p class="center italics">*Does not include banned registrants</p>
               <div class="card-action" style="border-top: none">
                 <a id="download-csv-button" class="waves-effect waves-light btn" onclick="EVN_Dash.ExportRegistrants('CSV')"><i class="material-icons" style="float: left;">file_download</i>  CSV</a>
-                <a id="download-csv-button" class="waves-effect waves-light btn" onclick="EVN_Dash.ExportRegistrants('JSON')"><i class="material-icons" style="float: left;">file_download</i>  JSON</a>
+                <a id="download-json-button" class="waves-effect waves-light btn" onclick="EVN_Dash.ExportRegistrants('JSON')"><i class="material-icons" style="float: left;">file_download</i>  JSON</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col s3"></div>
+          <div id="download-attended-registrants" class="card col s6 center">
+            <div id="download-attended-registrants-card" class="card-content">
+              <h4 class="center">Export Attended Registrants</h4>
+              <p class="center italics">Export all registrants that attended the event</p>
+              <div class="card-action" style="border-top: none">
+                <a id="download-attended-csv-button" class="waves-effect waves-light btn" onclick="EVN_Dash.ExportAttendedRegistrants('CSV')"><i class="material-icons" style="float: left;">file_download</i>  CSV</a>
+                <a id="download-attended-json-button" class="waves-effect waves-light btn" onclick="EVN_Dash.ExportAttendedRegistrants('JSON')"><i class="material-icons" style="float: left;">file_download</i>  JSON</a>
               </div>
             </div>
           </div>

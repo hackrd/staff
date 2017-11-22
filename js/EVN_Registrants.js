@@ -122,7 +122,7 @@ EVN_Registrants.prototype.ExportRegistrants = function (pFileType) {
             var JSONData = [];
             var JSONDataCounter = 0;
             for (var i = 0; i < EVN.mData.length; i++) {
-                if (typeof snap.val()['ID_' + EVN.mData[i].id] != undefined) {
+                if (typeof snap.val()['ID_' + EVN.mData[i].id] != 'undefined') {
                     if (snap.val()['ID_' + EVN.mData[i].id].Status != 'BANNED') {
                         JSONData.push($.extend(true, {}, EVN.mData[i]));
                         JSONData[JSONDataCounter].school_id = JSONData[JSONDataCounter].school.id.toString();
@@ -138,6 +138,60 @@ EVN_Registrants.prototype.ExportRegistrants = function (pFileType) {
 
             var Timestamp = SK.GetDate();
             var FileName = Timestamp + "_Hack River Dell Registrants";
+            
+            var DataURI = "";
+            
+            // Created proper download
+            if (pFileType == 'CSV') {
+                FileName += ".csv";
+                var CSVString = EVN.JSONToCSV(JSONData);
+                DataURI = "data:text/csv;charset=utf-8," + CSVString;
+            } else {
+                if (pFileType = 'JSON') {
+                    FileName += ".json";
+                    var JSONString = JSON.stringify(JSONData);
+                    DataURI = "data:application/json;charset=utf-8," + encodeURIComponent(JSONString);
+                } else {
+                    console.log('Invalid file type');
+                    return;
+                }
+            }
+            
+            var TempLinkElement = document.createElement('a');
+            TempLinkElement.setAttribute('href', DataURI);
+            TempLinkElement.setAttribute('download', FileName);
+            TempLinkElement.click();
+        });
+    }
+}
+
+EVN_Registrants.prototype.ExportAttendedRegistrants = function (pFileType) {
+    var EVN = this;
+    // check for permissions
+    if (EVN.mUser.HasPermission('ExportRegistrants') || EVN.mUser.HasPermission('All')) {
+        Materialize.toast('Preparing file for download...', 4000, 'toast-fix');
+        
+        firebase.database().ref().child('APPDATA').child('Registrants').once('value').then(function (snap) {
+            // Prepare data
+            var JSONData = [];
+            var JSONDataCounter = 0;
+            for (var i = 0; i < EVN.mData.length; i++) {
+                if (typeof snap.val()['ID_' + EVN.mData[i].id] != 'undefined') {
+                    if (snap.val()['ID_' + EVN.mData[i].id].Status == 'CHECKED_IN' || snap.val()['ID_' + EVN.mData[i].id].Status == 'CHECKED_OUT') {
+                        JSONData.push($.extend(true, {}, EVN.mData[i]));
+                        JSONData[JSONDataCounter].school_id = JSONData[JSONDataCounter].school.id.toString();
+                        JSONData[JSONDataCounter].school_name = JSONData[JSONDataCounter].school.name;
+                        JSONData[JSONDataCounter].last_updated = JSONData[JSONDataCounter].updated_at;
+                        delete JSONData[JSONDataCounter].school;
+                        delete JSONData[JSONDataCounter].scopes;
+                        delete JSONData[JSONDataCounter].updated_at;
+                        JSONDataCounter++;
+                    }
+                }
+            }
+
+            var Timestamp = SK.GetDate();
+            var FileName = Timestamp + "_Hack River Dell Attended Registrants";
             
             var DataURI = "";
             
