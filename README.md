@@ -2,6 +2,10 @@
 Hack River Dell Staff Access Panel
 
 Versions will be published under two names: Prototype and Release. Only published versions will be noted on this document.
+## RELEASE v1.0.0
+### New Features
+- No Changes
+
 ## PROTOTYPE v0.26.0
 ### New Features
 ##### Registrants Page
